@@ -29,7 +29,7 @@ async def reset_arena():
 async def get_diff():
     try:
         res = subprocess.run(["git", "diff", "HEAD~1", "HEAD", "active_target.py"], capture_output=True, text=True)
-        diff_text = res.stdout if res.stdout else "현재 커밋된 변경사항이 없거나 Clean 상태입니다."
+        diff_text = res.stdout if res.stdout else "No uncommitted modifications (Working tree clean)."
         return {"status": "success", "diff": diff_text}
     except Exception as e:
         return {"status": "error", "diff": str(e)}

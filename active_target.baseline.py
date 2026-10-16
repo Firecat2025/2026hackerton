@@ -60,10 +60,10 @@ init_db()
 async def portal_index():
     return """
     <!DOCTYPE html>
-    <html lang="ko">
+    <html lang="en">
     <head>
         <meta charset="UTF-8">
-        <title>Vibe Store - Protected Target</title>
+        <title>Vibe Store - Protected Target Application</title>
         <script src="https://cdn.tailwindcss.com"></script>
     </head>
     <body class="bg-slate-900 text-slate-100 min-h-screen p-8">
@@ -71,7 +71,7 @@ async def portal_index():
             <header class="border-b border-slate-700 pb-4 mb-6 flex justify-between items-center">
                 <div>
                     <h1 class="text-3xl font-bold text-cyan-400">⚡ Vibe Store Target Portal</h1>
-                    <p class="text-slate-400 text-sm">Protected Target Node running on 127.0.0.1:8002</p>
+                    <p class="text-slate-400 text-sm">Target Application Node running on 127.0.0.1:8002</p>
                 </div>
                 <div class="bg-emerald-900/40 text-emerald-300 border border-emerald-500/30 px-3 py-1 rounded text-sm font-mono">
                     STATUS: ACTIVE
@@ -80,19 +80,19 @@ async def portal_index():
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div class="bg-slate-800 p-6 rounded-lg border border-slate-700">
-                    <h2 class="text-xl font-bold mb-4 text-cyan-300">🔍 상품 검색 (Search)</h2>
+                    <h2 class="text-xl font-bold mb-4 text-cyan-300">🔍 Product Catalog Search</h2>
                     <form action="/api/search" method="get" class="space-y-4">
-                        <input type="text" name="q" placeholder="상품명 입력..." class="w-full p-2.5 rounded bg-slate-950 border border-slate-600 focus:outline-none focus:border-cyan-400 font-mono text-sm">
-                        <button type="submit" class="w-full bg-cyan-600 hover:bg-cyan-500 font-bold py-2 rounded text-white">검색 실행</button>
+                        <input type="text" name="q" placeholder="Enter product name..." class="w-full p-2.5 rounded bg-slate-950 border border-slate-600 focus:outline-none focus:border-cyan-400 font-mono text-sm">
+                        <button type="submit" class="w-full bg-cyan-600 hover:bg-cyan-500 font-bold py-2 rounded text-white">Execute Search</button>
                     </form>
                 </div>
 
                 <div class="bg-slate-800 p-6 rounded-lg border border-slate-700">
-                    <h2 class="text-xl font-bold mb-4 text-emerald-300">🔐 시스템 로그인 (Admin Auth)</h2>
+                    <h2 class="text-xl font-bold mb-4 text-emerald-300">🔐 System Login (Admin Auth)</h2>
                     <form action="/api/login" method="post" class="space-y-4">
-                        <input type="text" name="username" placeholder="아이디" class="w-full p-2 rounded bg-slate-950 border border-slate-600 text-sm">
-                        <input type="password" name="password" placeholder="비밀번호" class="w-full p-2 rounded bg-slate-950 border border-slate-600 text-sm">
-                        <button type="button" class="w-full bg-emerald-600 hover:bg-emerald-500 font-bold py-2 rounded text-white" onclick="alert('API 호출을 이용하세요.')">로그인</button>
+                        <input type="text" name="username" placeholder="Username" class="w-full p-2 rounded bg-slate-950 border border-slate-600 text-sm">
+                        <input type="password" name="password" placeholder="Password" class="w-full p-2 rounded bg-slate-950 border border-slate-600 text-sm">
+                        <button type="button" class="w-full bg-emerald-600 hover:bg-emerald-500 font-bold py-2 rounded text-white" onclick="alert('Use API authentication endpoint.')">Sign In</button>
                     </form>
                 </div>
             </div>

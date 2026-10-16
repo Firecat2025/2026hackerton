@@ -64,19 +64,19 @@ async def hud_dashboard():
                     <h1 class="text-xl font-black tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-teal-300 to-indigo-400">
                         VIBE DEFENDER // AUTONOMOUS CYBER ARENA
                     </h1>
-                    <p class="text-xs text-slate-400">Powered by Gemini 4 Argon (Interactions API) • GCE Zero-Inbound Protected</p>
+                    <p class="text-xs text-slate-400">Powered by Gemini 4 Argon (Interactions API) • GCE Zero-Inbound Protected Architecture</p>
                 </div>
             </div>
             
             <div class="flex items-center space-x-3 text-xs font-mono">
-                <!-- 1초 아레나 리셋 버튼 -->
+                <!-- 1-Second Reset Button -->
                 <button onclick="resetArena()" class="bg-rose-950/80 hover:bg-rose-900 text-rose-300 border border-rose-700/60 px-3.5 py-1.5 rounded-lg flex items-center space-x-2 transition font-bold shadow-lg shadow-rose-950/50">
                     <i class="fa-solid fa-arrow-rotate-left"></i>
-                    <span>🔄 아레나 1초 리셋</span>
+                    <span>⚡ Reset Arena</span>
                 </button>
                 <a href="/portal/" target="_blank" class="bg-slate-800 hover:bg-slate-700 text-cyan-300 px-3 py-1.5 rounded-lg border border-slate-700 flex items-center space-x-1.5 transition">
                     <i class="fa-solid fa-store"></i>
-                    <span>Target Portal (Proxy)</span>
+                    <span>Target Portal (E-Commerce)</span>
                 </a>
                 <span class="bg-emerald-950 text-emerald-400 border border-emerald-800/80 px-3 py-1 rounded-lg flex items-center space-x-2">
                     <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
@@ -100,24 +100,24 @@ async def hud_dashboard():
                                 Argon thinking_level="medium"
                             </span>
                         </div>
-                        <p class="text-xs text-slate-400 mb-4">다형성 익스플로잇 생성 및 타겟 쇼핑몰 실시간 침투 테스트:</p>
+                        <p class="text-xs text-slate-400 mb-4">Generates polymorphic exploit payloads against target e-commerce endpoints:</p>
                         <div class="grid grid-cols-3 gap-2.5 mb-4">
                             <button onclick="triggerAttack('sqli_search', 1)" class="bg-rose-900/30 hover:bg-rose-800/60 text-rose-200 border border-rose-700/50 rounded-xl p-3 text-xs font-semibold text-center transition flex flex-col items-center justify-center space-y-1">
                                 <span class="text-sm">💉 SQLi Search</span>
-                                <span class="text-[10px] text-slate-400">데이터 탈취 (Lv.1)</span>
+                                <span class="text-[10px] text-slate-400">Data Exfiltration (Lv.1)</span>
                             </button>
                             <button onclick="triggerAttack('auth_bypass', 2)" class="bg-rose-900/30 hover:bg-rose-800/60 text-rose-200 border border-rose-700/50 rounded-xl p-3 text-xs font-semibold text-center transition flex flex-col items-center justify-center space-y-1">
                                 <span class="text-sm">🔓 Auth Bypass</span>
-                                <span class="text-[10px] text-slate-400">관리자 인증우회 (Lv.2)</span>
+                                <span class="text-[10px] text-slate-400">Admin Bypass (Lv.2)</span>
                             </button>
                             <button onclick="triggerAttack('price_tampering', 3)" class="bg-rose-900/30 hover:bg-rose-800/60 text-rose-200 border border-rose-700/50 rounded-xl p-3 text-xs font-semibold text-center transition flex flex-col items-center justify-center space-y-1">
                                 <span class="text-sm">🏷️ Price Exploit</span>
-                                <span class="text-[10px] text-slate-400">가격변조 결제 (Lv.3)</span>
+                                <span class="text-[10px] text-slate-400">Logic Tampering (Lv.3)</span>
                             </button>
                         </div>
                     </div>
                     <div id="red-result" class="bg-slate-950/90 p-3.5 rounded-xl border border-slate-800/80 font-mono text-xs text-rose-300 min-h-[90px] overflow-auto">
-                        [Red Team 대기 중] 원하는 공격 시나리오를 클릭하세요.
+                        [Red Team Ready] Select an attack scenario to initiate automated exploit payload.
                     </div>
                 </div>
 
@@ -133,36 +133,36 @@ async def hud_dashboard():
                                 Argon thinking_level="high"
                             </span>
                         </div>
-                        <p class="text-xs text-slate-400 mb-4">침투 로그 심층 추론, 파라미터화 코드 자동 작성 및 Git Commit:</p>
+                        <p class="text-xs text-slate-400 mb-4">Deep telemetry reasoning, automated code refactoring & live Git commit:</p>
                         <div class="flex space-x-3 mb-4">
                             <button onclick="triggerDefensePatch()" class="flex-1 bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-3 px-4 rounded-xl text-xs transition flex items-center justify-center space-x-2 shadow-lg shadow-cyan-600/30">
                                 <i class="fa-solid fa-wand-magic-sparkles"></i>
-                                <span>Gemini 4 Argon 자율 패치 & Git Commit</span>
+                                <span>Gemini 4 Argon Autonomous Patch & Git Commit</span>
                             </button>
-                            <button onclick="refreshDiff()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-4 py-3 rounded-xl text-xs font-mono border border-slate-700 transition">
+                            <button onclick="refreshDiff()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-4 py-3 rounded-xl text-xs font-mono border border-slate-700 transition" title="Refresh Git Diff">
                                 <i class="fa-solid fa-rotate"></i>
                             </button>
                         </div>
                     </div>
                     <div id="blue-result" class="bg-slate-950/90 p-3.5 rounded-xl border border-slate-800/80 font-mono text-xs text-cyan-300 min-h-[90px] overflow-auto">
-                        [Blue Team 대기 중] 침투 탐지 대기 중...
+                        [Blue Team Ready] Monitoring telemetry stream for breach events...
                     </div>
                 </div>
             </div>
 
             <!-- Grid Row 2: Dual Log Stream (Packet Log vs Git Evolution Audit) -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <!-- Left: 실시간 네트워크/공격 패킷 로그 -->
+                <!-- Left: Real-Time Adversary & Breach Telemetry -->
                 <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-5 flex flex-col">
                     <div class="flex justify-between items-center pb-3 border-b border-slate-800 mb-3">
                         <h3 class="text-sm font-bold text-slate-300 uppercase tracking-wider flex items-center space-x-2">
                             <i class="fa-solid fa-terminal text-rose-400"></i>
-                            <span>1. 실시간 공격 & 탐지 패킷 스트림 (Live Telemetry)</span>
+                            <span>1. Real-Time Adversary & Breach Telemetry Stream</span>
                         </h3>
                         <span class="text-[11px] font-mono text-slate-500">target_access.log</span>
                     </div>
                     <div id="packet-log-stream" class="bg-slate-950 p-4 rounded-xl border border-slate-800/80 font-mono text-xs text-slate-300 space-y-1.5 h-72 overflow-y-auto">
-                        <div class="text-slate-500">[대기 중] 공격이 시작되면 실시간 패킷 및 탐지 로그가 표시됩니다.</div>
+                        <div class="text-slate-500">[Idle] Waiting for adversary attack stream...</div>
                     </div>
                 </div>
 
@@ -171,13 +171,13 @@ async def hud_dashboard():
                     <div class="flex justify-between items-center pb-3 border-b border-slate-800 mb-3">
                         <h3 class="text-sm font-bold text-slate-300 uppercase tracking-wider flex items-center space-x-2">
                             <i class="fa-solid fa-code-compare text-teal-400"></i>
-                            <span>2. Git 코드 자율 진화 영수증 (Live Git Diff)</span>
+                            <span>2. Git Code Evolution Audit Trail (Live Diff)</span>
                         </h3>
                         <span class="text-[11px] font-mono text-emerald-400 bg-emerald-950 px-2 py-0.5 rounded border border-emerald-800">
                             uvicorn hot-reload
                         </span>
                     </div>
-                    <pre id="diff-viewer" class="bg-slate-950 p-4 rounded-xl border border-slate-800/80 font-mono text-xs text-emerald-300/90 h-72 overflow-auto whitespace-pre-wrap">Diff 내역이 아직 없습니다 (Clean 상태).</pre>
+                    <pre id="diff-viewer" class="bg-slate-950 p-4 rounded-xl border border-slate-800/80 font-mono text-xs text-emerald-300/90 h-72 overflow-auto whitespace-pre-wrap">No uncommitted modifications (Working tree clean).</pre>
                 </div>
             </div>
 
@@ -185,10 +185,10 @@ async def hud_dashboard():
             <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-5">
                 <h3 class="text-sm font-bold text-slate-300 uppercase tracking-wider mb-3 flex items-center space-x-2">
                     <i class="fa-solid fa-code-branch text-indigo-400"></i>
-                    <span>Git Commit Timeline (Immutable History)</span>
+                    <span>3. Git Commit Timeline (Immutable History)</span>
                 </h3>
                 <div id="git-log" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 text-xs font-mono">
-                    <div class="text-slate-500">커밋 이력 로딩 중...</div>
+                    <div class="text-slate-500">Loading commit timeline...</div>
                 </div>
             </div>
         </main>
@@ -196,50 +196,50 @@ async def hud_dashboard():
         <script>
             async function triggerAttack(scenario, level) {
                 const redBox = document.getElementById('red-result');
-                redBox.innerHTML = '<span class="text-slate-400">Gemini 4 Argon 페이로드 생성 및 공격 발송 중...</span>';
+                redBox.innerHTML = '<span class="text-slate-400">Generating Gemini 4 Argon payload and dispatching exploit...</span>';
                 try {
                     const res = await fetch(`/api/attack?scenario=${scenario}&level=${level}`, { method: 'POST' });
                     const data = await res.json();
-                    let html = `<div><strong>[공격 상태]</strong> ${data.breached ? '🚨 침투 성공 (VULNERABLE)' : '🛡️ 차단 성공 (BLOCKED)'}</div>`;
+                    let html = `<div><strong>[Attack Result]</strong> ${data.breached ? '🚨 TARGET BREACHED (VULNERABLE)' : '🛡️ ATTACK BLOCKED (PROTECTED)'}</div>`;
                     if (data.flag) {
-                        html += `<div class="text-amber-400 font-bold mt-1">🚩 Flag 탈취: ${data.flag}</div>`;
+                        html += `<div class="text-amber-400 font-bold mt-1">🚩 Flag Exfiltrated: ${data.flag}</div>`;
                     }
                     html += `<div class="text-slate-400 text-[11px] mt-1">${data.payload?.description || ''}</div>`;
                     redBox.innerHTML = html;
                     refreshLogs();
                 } catch(e) {
-                    redBox.innerHTML = `<span class="text-red-400">공격 요청 오류: ${e}</span>`;
+                    redBox.innerHTML = `<span class="text-red-400">Attack request error: ${e}</span>`;
                 }
             }
 
             async function triggerDefensePatch() {
                 const blueBox = document.getElementById('blue-result');
-                blueBox.innerHTML = '<span class="text-slate-400">Gemini 4 Argon (High) 소스코드 분석 및 패치 생성 중...</span>';
+                blueBox.innerHTML = '<span class="text-slate-400">Gemini 4 Argon (High) analyzing AST and synthesizing security patch...</span>';
                 try {
                     const res = await fetch('/api/defense/patch', { method: 'POST' });
                     const data = await res.json();
-                    blueBox.innerHTML = `<div><strong>[패치 상태]</strong> ${data.description || data.message}</div><div class="text-xs text-emerald-400 mt-1">Commit: ${data.commit_hash || 'HEAD'}</div>`;
+                    blueBox.innerHTML = `<div><strong>[Patch Status]</strong> ${data.description || data.message}</div><div class="text-xs text-emerald-400 mt-1">Git Commit: ${data.commit_hash || 'HEAD'}</div>`;
                     refreshDiff();
                     refreshGitLog();
                     refreshLogs();
                 } catch(e) {
-                    blueBox.innerHTML = `<span class="text-red-400">패치 요청 오류: ${e}</span>`;
+                    blueBox.innerHTML = `<span class="text-red-400">Patch error: ${e}</span>`;
                 }
             }
 
             async function resetArena() {
-                if(!confirm('아레나를 취약한 베이스라인 초기 상태로 1초 리셋하시겠습니까?')) return;
+                if(!confirm('Reset the cyber arena to the vulnerable baseline state?')) return;
                 try {
                     const res = await fetch('/api/arena/reset', { method: 'POST' });
                     const data = await res.json();
-                    alert(data.message || '리셋 완료!');
+                    alert(data.message || 'Arena reset complete!');
                     refreshDiff();
                     refreshGitLog();
                     refreshLogs();
-                    document.getElementById('red-result').innerText = '[대기 중] 아레나가 초기화되었습니다.';
-                    document.getElementById('blue-result').innerText = '[대기 중] 새로운 공격을 기다리는 중입니다.';
+                    document.getElementById('red-result').innerText = '[Red Team Ready] Arena restored to vulnerable baseline.';
+                    document.getElementById('blue-result').innerText = '[Blue Team Ready] Waiting for adversary attacks.';
                 } catch(e) {
-                    alert('리셋 오류: ' + e);
+                    alert('Reset error: ' + e);
                 }
             }
 
@@ -247,7 +247,7 @@ async def hud_dashboard():
                 try {
                     const res = await fetch('/api/git/diff');
                     const data = await res.json();
-                    document.getElementById('diff-viewer').textContent = data.diff || '수정된 변경 사항이 없습니다 (Clean).';
+                    document.getElementById('diff-viewer').textContent = data.diff || 'No uncommitted modifications (Working tree clean).';
                 } catch(e) {
                     console.error(e);
                 }
@@ -267,7 +267,7 @@ async def hud_dashboard():
                             </div>
                         `).join('');
                     } else {
-                        container.innerHTML = '<div class="text-slate-500">커밋 기록 없음</div>';
+                        container.innerHTML = '<div class="text-slate-500">No commits found</div>';
                     }
                 } catch(e) {
                     console.error(e);
