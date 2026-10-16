@@ -1,8 +1,10 @@
 """
-Vibe Defender Cyber Arena HUD & Orchestrator
+Vibe Defender Cyber Arena HUD & Orchestrator (v3.0)
 Coordinates Red Server (8003), Blue Server (8004), Target App (8002).
-Provides Web HUD on 127.0.0.1:8080, Reverse Proxy for Target Portal,
-and Telemetry Endpoints for Flutter-Firebase integration.
+Features:
+1. Interactive Git Commit Time-Machine (click any commit to inspect historical diff & full code snapshot)
+2. 3-Tab Code Evolution Inspector (Visual Diff / Full Code Snapshot / Original Vulnerable Baseline)
+3. 1-Click 3-Round Autonomous Cyber War (Auto-Battle Mode)
 """
 
 import os
@@ -13,7 +15,7 @@ from datetime import datetime
 from fastapi import FastAPI, Request, Response, Query
 from fastapi.responses import HTMLResponse, JSONResponse
 
-app = FastAPI(title="Vibe Defender Cyber Arena HUD", version="2.1.0")
+app = FastAPI(title="Vibe Defender Cyber Arena HUD", version="3.0.0")
 
 TARGET_HOST = "http://127.0.0.1:8002"
 RED_HOST = "http://127.0.0.1:8003"
@@ -47,17 +49,18 @@ async def hud_dashboard():
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>🛡️ Vibe Defender - Autonomous Cyber Arena HUD</title>
+        <title>🛡️ Vibe Defender v3.0 - Autonomous Cyber Arena HUD</title>
         <script src="https://cdn.tailwindcss.com"></script>
         <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
         <style>
             .glow-cyan { box-shadow: 0 0 20px rgba(6, 182, 212, 0.35); }
             .glow-rose { box-shadow: 0 0 20px rgba(244, 63, 94, 0.35); }
+            .glow-indigo { box-shadow: 0 0 20px rgba(99, 102, 241, 0.45); }
         </style>
     </head>
     <body class="bg-slate-950 text-slate-100 min-h-screen font-sans">
         <!-- Top Nav -->
-        <header class="border-b border-slate-800 bg-slate-900/80 backdrop-blur px-6 py-4 flex flex-wrap justify-between items-center gap-4 sticky top-0 z-50">
+        <header class="border-b border-slate-800 bg-slate-900/90 backdrop-blur px-6 py-4 flex flex-wrap justify-between items-center gap-4 sticky top-0 z-50">
             <div class="flex items-center space-x-3">
                 <div class="bg-cyan-500/20 text-cyan-400 p-2.5 rounded-xl border border-cyan-500/40 glow-cyan">
                     <i class="fa-solid fa-shield-halved text-2xl"></i>
@@ -70,23 +73,39 @@ async def hud_dashboard():
                 </div>
             </div>
             
-            <div class="flex items-center space-x-3 text-xs font-mono">
-                <button onclick="resetArena()" class="bg-rose-950/80 hover:bg-rose-900 text-rose-300 border border-rose-700/60 px-3.5 py-1.5 rounded-lg flex items-center space-x-2 transition font-bold shadow-lg shadow-rose-950/50">
+            <div class="flex flex-wrap items-center gap-2.5 text-xs font-mono">
+                <!-- 1-Click Auto-Battle Button -->
+                <button id="auto-battle-btn" onclick="startAutoBattle()" class="bg-gradient-to-r from-indigo-600 to-cyan-600 hover:from-indigo-500 hover:to-cyan-500 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition font-bold glow-indigo">
+                    <i class="fa-solid fa-bolt"></i>
+                    <span>⚔️ Start Auto-Battle (3 Rounds)</span>
+                </button>
+                <button onclick="resetArena()" class="bg-rose-950/80 hover:bg-rose-900 text-rose-300 border border-rose-700/60 px-3.5 py-2 rounded-lg flex items-center space-x-2 transition font-bold">
                     <i class="fa-solid fa-arrow-rotate-left"></i>
                     <span>⚡ Reset Arena</span>
                 </button>
-                <a href="/portal/" target="_blank" class="bg-slate-800 hover:bg-slate-700 text-cyan-300 px-3 py-1.5 rounded-lg border border-slate-700 flex items-center space-x-1.5 transition">
+                <a href="/portal/" target="_blank" class="bg-slate-800 hover:bg-slate-700 text-cyan-300 px-3.5 py-2 rounded-lg border border-slate-700 flex items-center space-x-1.5 transition font-bold">
                     <i class="fa-solid fa-store"></i>
-                    <span>Target Portal (E-Commerce)</span>
+                    <span>Target Storefront (/portal)</span>
                 </a>
-                <span class="bg-emerald-950 text-emerald-400 border border-emerald-800/80 px-3 py-1 rounded-lg flex items-center space-x-2">
+                <span class="bg-emerald-950 text-emerald-400 border border-emerald-800/80 px-3 py-1.5 rounded-lg flex items-center space-x-2">
                     <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                    <span>ALL NODES ONLINE</span>
+                    <span>ONLINE</span>
                 </span>
             </div>
         </header>
 
         <main class="max-w-7xl mx-auto p-6 space-y-6">
+            <!-- Auto-Battle Progress Stepper (Hidden unless active) -->
+            <div id="battle-stepper" class="hidden bg-slate-900/90 border border-indigo-500/50 rounded-2xl p-4 glow-indigo">
+                <div class="flex justify-between items-center mb-2">
+                    <span id="battle-step-title" class="text-xs font-bold text-indigo-300 uppercase tracking-wider">⚔️ Autonomous Cyber Battle in Progress...</span>
+                    <span id="battle-step-badge" class="text-xs font-mono bg-indigo-950 text-indigo-300 px-2.5 py-0.5 rounded border border-indigo-700">Round 1 / 3</span>
+                </div>
+                <div class="w-full bg-slate-950 h-2.5 rounded-full overflow-hidden border border-slate-800">
+                    <div id="battle-progress-bar" class="bg-gradient-to-r from-rose-500 via-indigo-500 to-emerald-400 h-full transition-all duration-500" style="width: 10%"></div>
+                </div>
+            </div>
+
             <!-- Grid Row 1: Dual Control Nodes (Red vs Blue) -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <!-- Red Team Adversary Node -->
@@ -118,7 +137,7 @@ async def hud_dashboard():
                         </div>
                     </div>
                     <div id="red-result" class="bg-slate-950/90 p-3.5 rounded-xl border border-slate-800/80 font-mono text-xs text-rose-300 min-h-[90px] overflow-auto">
-                        [Red Team Ready] Select an attack scenario (Lv.1 ~ Lv.3) to launch an exploit.
+                        [Red Team Ready] Select an attack scenario (Lv.1 ~ Lv.3) or click 'Start Auto-Battle'.
                     </div>
                 </div>
 
@@ -151,46 +170,71 @@ async def hud_dashboard():
                 </div>
             </div>
 
-            <!-- Grid Row 2: Dual Log Stream (Packet Log vs Visual Before/After Code Evolution) -->
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <!-- Left: Real-Time Adversary & Breach Telemetry -->
-                <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-5 flex flex-col">
+            <!-- Grid Row 2: Dual Log Stream & 3-Tab Code Time-Machine Inspector -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <!-- Left (5 cols): Real-Time Adversary & Breach Telemetry -->
+                <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-5 flex flex-col lg:col-span-5">
                     <div class="flex justify-between items-center pb-3 border-b border-slate-800 mb-3">
                         <h3 class="text-sm font-bold text-slate-300 uppercase tracking-wider flex items-center space-x-2">
                             <i class="fa-solid fa-terminal text-rose-400"></i>
-                            <span>1. Real-Time Adversary & Breach Telemetry Stream</span>
+                            <span>1. Real-Time Breach Telemetry</span>
                         </h3>
                         <span class="text-[11px] font-mono text-slate-500">target_access.log</span>
                     </div>
-                    <div id="packet-log-stream" class="bg-slate-950 p-4 rounded-xl border border-slate-800/80 font-mono text-xs text-slate-300 space-y-1.5 h-80 overflow-y-auto">
+                    <div id="packet-log-stream" class="bg-slate-950 p-4 rounded-xl border border-slate-800/80 font-mono text-xs text-slate-300 space-y-1.5 h-96 overflow-y-auto">
                         <div class="text-slate-500">[Idle] Waiting for adversary attack stream...</div>
                     </div>
                 </div>
 
-                <!-- Right: Visual Before vs After Code Evolution Viewer -->
-                <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-5 flex flex-col">
-                    <div class="flex justify-between items-center pb-3 border-b border-slate-800 mb-3">
+                <!-- Right (7 cols): 3-Tab Code Evolution & Time-Machine Inspector -->
+                <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-5 flex flex-col lg:col-span-7">
+                    <div class="flex flex-wrap justify-between items-center gap-2 pb-3 border-b border-slate-800 mb-3">
                         <h3 class="text-sm font-bold text-slate-300 uppercase tracking-wider flex items-center space-x-2">
                             <i class="fa-solid fa-code-compare text-teal-400"></i>
-                            <span>2. Live Source Code Evolution (Before vs. After)</span>
+                            <span>2. Code Evolution & Time-Machine Inspector</span>
                         </h3>
-                        <span class="text-[11px] font-mono text-emerald-400 bg-emerald-950 px-2 py-0.5 rounded border border-emerald-800">
-                            active_target.py • uvicorn hot-reload
-                        </span>
+                        <!-- 3 Tabs -->
+                        <div class="flex space-x-1 bg-slate-950 p-1 rounded-lg border border-slate-800 text-[11px] font-mono">
+                            <button id="tab-btn-diff" onclick="switchInspectorTab('diff')" class="px-2.5 py-1 rounded bg-cyan-600 text-white font-bold transition">
+                                🔀 Visual Diff
+                            </button>
+                            <button id="tab-btn-full" onclick="switchInspectorTab('full')" class="px-2.5 py-1 rounded text-slate-400 hover:text-white transition">
+                                📜 Snapshot Code
+                            </button>
+                            <button id="tab-btn-base" onclick="switchInspectorTab('base')" class="px-2.5 py-1 rounded text-slate-400 hover:text-white transition">
+                                ⚠️ Original Vulnerable
+                            </button>
+                        </div>
                     </div>
-                    <div id="diff-viewer" class="bg-slate-950 p-4 rounded-xl border border-slate-800/80 font-mono text-xs h-80 overflow-y-auto space-y-3">
-                        <div class="text-slate-500">Click an Attack button and then 'Autonomous Patch' to see the exact lines of code evolve in real time.</div>
+
+                    <div id="inspector-header" class="text-[11px] font-mono text-slate-400 mb-2 flex justify-between items-center bg-slate-950/60 px-3 py-1.5 rounded-lg border border-slate-800/60">
+                        <span id="inspected-commit-label">📍 Viewing: Latest Working State (HEAD)</span>
+                        <span class="text-emerald-400">active_target.py • uvicorn --reload</span>
                     </div>
+
+                    <!-- Tab Content 1: Visual Diff -->
+                    <div id="tab-content-diff" class="bg-slate-950 p-4 rounded-xl border border-slate-800/80 font-mono text-xs h-80 overflow-y-auto space-y-3">
+                        <div class="text-slate-500">Click an Attack button and then 'Autonomous Patch', or click any Commit Card below to inspect past code changes!</div>
+                    </div>
+
+                    <!-- Tab Content 2: Full Code Snapshot at Selected Commit -->
+                    <pre id="tab-content-full" class="hidden bg-slate-950 p-4 rounded-xl border border-slate-800/80 font-mono text-[11px] text-cyan-200 h-80 overflow-auto whitespace-pre"></pre>
+
+                    <!-- Tab Content 3: Original Vulnerable Baseline Code -->
+                    <pre id="tab-content-base" class="hidden bg-slate-950 p-4 rounded-xl border border-slate-800/80 font-mono text-[11px] text-rose-200/90 h-80 overflow-auto whitespace-pre"></pre>
                 </div>
             </div>
 
-            <!-- Grid Row 3: Git Commit Timeline -->
+            <!-- Grid Row 3: Interactive Git Commit Timeline (Time-Machine) -->
             <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-5">
-                <h3 class="text-sm font-bold text-slate-300 uppercase tracking-wider mb-3 flex items-center space-x-2">
-                    <i class="fa-solid fa-code-branch text-indigo-400"></i>
-                    <span>3. Git Commit Timeline (Immutable History)</span>
-                </h3>
-                <div id="git-log" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 text-xs font-mono">
+                <div class="flex justify-between items-center mb-3">
+                    <h3 class="text-sm font-bold text-slate-300 uppercase tracking-wider flex items-center space-x-2">
+                        <i class="fa-solid fa-clock-rotate-left text-indigo-400"></i>
+                        <span>3. Interactive Git Commit Time-Machine (Click Any Commit to Inspect Past Code!)</span>
+                    </h3>
+                    <span class="text-xs font-mono text-indigo-400">Author: Firecat2025 &lt;2025firecat@gmail.com&gt;</span>
+                </div>
+                <div id="git-log" class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-3 text-xs font-mono">
                     <div class="text-slate-500">Loading commit timeline...</div>
                 </div>
             </div>
@@ -198,14 +242,46 @@ async def hud_dashboard():
 
         <script>
             let currentAttackLevel = 0;
+            let selectedCommitHash = 'HEAD';
 
             function escapeHtml(str) {
                 return (str || '').replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
             }
 
-            function renderColorDiff(rawDiff, patchInfo) {
-                const viewer = document.getElementById('diff-viewer');
+            function switchInspectorTab(tab) {
+                ['diff', 'full', 'base'].forEach(t => {
+                    document.getElementById(`tab-content-${t}`).classList.add('hidden');
+                    const btn = document.getElementById(`tab-btn-${t}`);
+                    btn.className = 'px-2.5 py-1 rounded text-slate-400 hover:text-white transition';
+                });
+                document.getElementById(`tab-content-${tab}`).classList.remove('hidden');
+                document.getElementById(`tab-btn-${tab}`).className = 'px-2.5 py-1 rounded bg-cyan-600 text-white font-bold transition';
+
+                if (tab === 'base') {
+                    loadBaselineCode();
+                } else if (tab === 'full' && !document.getElementById('tab-content-full').textContent) {
+                    inspectCommit(selectedCommitHash);
+                }
+            }
+
+            async function loadBaselineCode() {
+                try {
+                    const res = await fetch('/api/code/baseline');
+                    const data = await res.json();
+                    const lines = (data.baseline_code || '').split('\\n').map((l, i) => `${String(i+1).padStart(3, ' ')} | ${l}`).join('\\n');
+                    document.getElementById('tab-content-base').textContent = lines;
+                } catch(e) {
+                    console.error(e);
+                }
+            }
+
+            function renderColorDiff(rawDiff, patchInfo, commitTitle = '') {
+                const viewer = document.getElementById('tab-content-diff');
                 let html = '';
+
+                if (commitTitle) {
+                    html += `<div class="bg-indigo-950/60 border border-indigo-700/60 px-3 py-2 rounded-lg text-indigo-200 text-[11px] font-bold mb-2">🕰️ Time-Machine Commit: ${escapeHtml(commitTitle)}</div>`;
+                }
 
                 if (patchInfo && patchInfo.before_code && patchInfo.after_code) {
                     html += `
@@ -223,7 +299,7 @@ async def hud_dashboard():
                                 <pre class="text-emerald-200 whitespace-pre-wrap text-[11px]">+ ${escapeHtml(patchInfo.after_code)}</pre>
                             </div>
                         </div>
-                        <div class="border-t border-slate-800 pt-2 text-[10px] text-slate-500 uppercase font-bold">Raw Git Diff Output:</div>
+                        <div class="border-t border-slate-800 pt-2 text-[10px] text-slate-500 uppercase font-bold">Git Diff Lines:</div>
                     `;
                 }
 
@@ -243,10 +319,35 @@ async def hud_dashboard():
                     }).join('');
                     html += `<div class="space-y-0.5">${formattedLines}</div>`;
                 } else if (!html) {
-                    html = `<div class="text-slate-500">No code changes yet. Launch an attack and click 'Autonomous Patch' to watch the code evolve!</div>`;
+                    html = `<div class="text-slate-500">No code diff in this commit or baseline state. Click another commit card below or run an Attack + Patch!</div>`;
                 }
 
                 viewer.innerHTML = html;
+            }
+
+            async function inspectCommit(hash) {
+                selectedCommitHash = hash;
+                document.querySelectorAll('.commit-card').forEach(el => {
+                    el.classList.remove('border-cyan-400', 'bg-cyan-950/30');
+                    el.classList.add('border-slate-800/80', 'bg-slate-950');
+                });
+                const activeCard = document.getElementById(`commit-card-${hash}`);
+                if (activeCard) {
+                    activeCard.classList.remove('border-slate-800/80', 'bg-slate-950');
+                    activeCard.classList.add('border-cyan-400', 'bg-cyan-950/30');
+                }
+
+                try {
+                    const res = await fetch(`/api/git/commit/${hash}`);
+                    const data = await res.json();
+                    document.getElementById('inspected-commit-label').textContent = `🕰️ Inspecting Commit [${data.hash}]: ${data.subject} (${data.time})`;
+                    renderColorDiff(data.diff, null, `${data.hash} — ${data.subject}`);
+
+                    const numberedCode = (data.full_code || '').split('\\n').map((l, i) => `${String(i+1).padStart(3, ' ')} | ${l}`).join('\\n');
+                    document.getElementById('tab-content-full').textContent = numberedCode;
+                } catch(e) {
+                    console.error(e);
+                }
             }
 
             async function triggerAttack(scenario, level) {
@@ -262,40 +363,96 @@ async def hud_dashboard():
                     }
                     html += `<div class="text-slate-400 text-[11px] mt-1">${data.payload?.description || ''}</div>`;
                     redBox.innerHTML = html;
-                    refreshLogs();
+                    await refreshLogs();
+                    return data;
                 } catch(e) {
                     redBox.innerHTML = `<span class="text-red-400">Attack request error: ${e}</span>`;
+                    return null;
                 }
             }
 
-            async function triggerDefensePatch() {
+            async function triggerDefensePatch(levelOverride = null) {
+                const lvl = levelOverride !== null ? levelOverride : currentAttackLevel;
                 const blueBox = document.getElementById('blue-result');
                 blueBox.innerHTML = '<span class="text-slate-400">Gemini 4 Argon (High) analyzing AST and synthesizing security patch...</span>';
                 try {
-                    const res = await fetch(`/api/defense/patch?round_num=${currentAttackLevel}`, { method: 'POST' });
+                    const res = await fetch(`/api/defense/patch?round_num=${lvl}`, { method: 'POST' });
                     const data = await res.json();
                     if (data.status === 'patched') {
                         blueBox.innerHTML = `<div><strong>[Patch Applied]</strong> ${data.description}</div><div class="text-xs text-emerald-400 mt-1">Git Commit: ${data.commit_hash} • Target: ${data.target_endpoint}</div>`;
+                        document.getElementById('inspected-commit-label').textContent = `📍 Viewing Latest Patch [${data.commit_hash}]: ${data.target_endpoint}`;
                     } else {
                         blueBox.innerHTML = `<div><strong>[Info]</strong> ${data.message}</div>`;
                     }
                     await refreshDiff(data);
-                    refreshGitLog();
-                    refreshLogs();
+                    await refreshGitLog();
+                    await refreshLogs();
+                    return data;
                 } catch(e) {
                     blueBox.innerHTML = `<span class="text-red-400">Patch error: ${e}</span>`;
+                    return null;
                 }
+            }
+
+            const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+            async function startAutoBattle() {
+                const stepper = document.getElementById('battle-stepper');
+                const title = document.getElementById('battle-step-title');
+                const badge = document.getElementById('battle-step-badge');
+                const bar = document.getElementById('battle-progress-bar');
+                stepper.classList.remove('hidden');
+
+                // Step 0: Reset to clean vulnerable state
+                title.textContent = '⚡ Step 0: Restoring Target Storefront to Vulnerable Baseline...';
+                badge.textContent = 'Initializing';
+                bar.style.width = '10%';
+                await fetch('/api/arena/reset', { method: 'POST' });
+                await sleep(1000);
+
+                const rounds = [
+                    { level: 1, scenario: 'sqli_search', name: 'SQL Injection Search Exfiltration (Lv.1)' },
+                    { level: 2, scenario: 'auth_bypass', name: 'Admin Authentication Bypass (Lv.2)' },
+                    { level: 3, scenario: 'price_tampering', name: 'Zero-Dollar Order Price Tampering (Lv.3)' }
+                ];
+
+                for (let i = 0; i < rounds.length; i++) {
+                    const r = rounds[i];
+                    badge.textContent = `Round ${r.level} / 3`;
+
+                    // 1. Red Attack
+                    title.textContent = `🔴 Round ${r.level}: Red-Argon attacking ${r.name}...`;
+                    bar.style.width = `${15 + i * 28}%`;
+                    await triggerAttack(r.scenario, r.level);
+                    await sleep(1800);
+
+                    // 2. Blue Patch
+                    title.textContent = `🔵 Round ${r.level}: Blue-Argon patching vulnerability & committing to Git...`;
+                    bar.style.width = `${25 + i * 28}%`;
+                    await triggerDefensePatch(r.level);
+                    await sleep(2000);
+
+                    // 3. Re-Attack Verification
+                    title.textContent = `🛡️ Round ${r.level}: Re-running ${r.name} to verify Argon patch...`;
+                    bar.style.width = `${35 + i * 28}%`;
+                    await triggerAttack(r.scenario, r.level);
+                    await sleep(1500);
+                }
+
+                title.textContent = '🏆 AUTO-BATTLE COMPLETE: All 3 Vulnerabilities Patched, Verified & Committed to Git!';
+                badge.textContent = '100% HARDENED';
+                bar.style.width = '100%';
             }
 
             async function resetArena() {
                 if(!confirm('Reset the cyber arena to the vulnerable baseline state?')) return;
                 try {
-                    const res = await fetch('/api/arena/reset', { method: 'POST' });
-                    const data = await res.json();
+                    await fetch('/api/arena/reset', { method: 'POST' });
                     currentAttackLevel = 0;
-                    document.getElementById('diff-viewer').innerHTML = '<div class="text-amber-300 font-bold">⚡ Arena Reset to Vulnerable Baseline! All 3 vulnerabilities are active again.</div>';
-                    refreshGitLog();
-                    refreshLogs();
+                    document.getElementById('battle-stepper').classList.add('hidden');
+                    document.getElementById('tab-content-diff').innerHTML = '<div class="text-amber-300 font-bold">⚡ Arena Reset to Vulnerable Baseline! All 3 vulnerabilities are active again.</div>';
+                    await refreshGitLog();
+                    await refreshLogs();
                     document.getElementById('red-result').innerText = '[Red Team Ready] Arena restored to vulnerable baseline.';
                     document.getElementById('blue-result').innerText = '[Blue Team Ready] Waiting for adversary attacks.';
                 } catch(e) {
@@ -308,6 +465,10 @@ async def hud_dashboard():
                     const res = await fetch('/api/git/diff');
                     const data = await res.json();
                     renderColorDiff(data.diff, patchData || data.last_patch);
+                    if (data.current_code) {
+                        const numbered = data.current_code.split('\\n').map((l, i) => `${String(i+1).padStart(3, ' ')} | ${l}`).join('\\n');
+                        document.getElementById('tab-content-full').textContent = numbered;
+                    }
                 } catch(e) {
                     console.error(e);
                 }
@@ -320,9 +481,12 @@ async def hud_dashboard():
                     const container = document.getElementById('git-log');
                     if(data.commits && data.commits.length > 0) {
                         container.innerHTML = data.commits.map(c => `
-                            <div class="p-3 rounded-xl bg-slate-950 border border-slate-800/80">
-                                <div class="text-cyan-400 font-bold mb-1">${c.hash}</div>
-                                <div class="text-slate-300 truncate text-[11px]">${c.message}</div>
+                            <div id="commit-card-${c.hash}" onclick="inspectCommit('${c.hash}')" class="commit-card cursor-pointer p-3 rounded-xl bg-slate-950 border border-slate-800/80 hover:border-cyan-400 transition group">
+                                <div class="flex justify-between items-center mb-1">
+                                    <span class="text-cyan-400 font-bold group-hover:underline">${c.hash}</span>
+                                    <span class="text-[9px] bg-slate-900 text-slate-400 px-1.5 py-0.5 rounded">Inspect 🔍</span>
+                                </div>
+                                <div class="text-slate-300 truncate text-[11px]" title="${escapeHtml(c.message)}">${escapeHtml(c.message)}</div>
                                 <div class="text-[10px] text-slate-500 mt-1">${c.time}</div>
                             </div>
                         `).join('');
@@ -356,6 +520,7 @@ async def hud_dashboard():
             refreshGitLog();
             refreshDiff();
             refreshLogs();
+            loadBaselineCode();
             setInterval(refreshLogs, 4000);
         </script>
     </body>
@@ -438,12 +603,50 @@ async def git_history():
 async def git_diff():
     try:
         res = subprocess.run(["git", "diff", "HEAD~1", "HEAD", "active_target.py"], capture_output=True, text=True)
+        current_code = ""
+        if os.path.exists("active_target.py"):
+            with open("active_target.py", "r", encoding="utf-8") as f:
+                current_code = f.read()
         return {
             "diff": res.stdout if res.stdout else "No uncommitted modifications.",
-            "last_patch": arena_state.get("last_patch_info")
+            "last_patch": arena_state.get("last_patch_info"),
+            "current_code": current_code
         }
     except Exception as e:
         return {"diff": f"Error: {str(e)}"}
+
+@app.get("/api/git/commit/{commit_hash}")
+async def inspect_git_commit(commit_hash: str):
+    """
+    Time-Machine endpoint: returns the exact diff and full file snapshot of active_target.py at a given commit hash.
+    """
+    try:
+        meta_res = subprocess.run(["git", "show", "-s", "--format=%h|%s|%ar", commit_hash], capture_output=True, text=True)
+        parts = meta_res.stdout.strip().split("|")
+        short_hash = parts[0] if len(parts) > 0 else commit_hash
+        subject = parts[1] if len(parts) > 1 else ""
+        rel_time = parts[2] if len(parts) > 2 else ""
+
+        diff_res = subprocess.run(["git", "show", "--format=", commit_hash, "--", "active_target.py"], capture_output=True, text=True)
+        code_res = subprocess.run(["git", "show", f"{commit_hash}:active_target.py"], capture_output=True, text=True)
+
+        return {
+            "hash": short_hash,
+            "subject": subject,
+            "time": rel_time,
+            "diff": diff_res.stdout if diff_res.stdout else "No changes to active_target.py in this commit.",
+            "full_code": code_res.stdout if code_res.returncode == 0 else "File snapshot not available in this commit."
+        }
+    except Exception as e:
+        return {"error": str(e)}
+
+@app.get("/api/code/baseline")
+async def get_baseline_code():
+    baseline_code = ""
+    if os.path.exists("active_target.baseline.py"):
+        with open("active_target.baseline.py", "r", encoding="utf-8") as f:
+            baseline_code = f.read()
+    return {"baseline_code": baseline_code}
 
 @app.get("/api/telemetry/feed")
 async def telemetry_feed():
