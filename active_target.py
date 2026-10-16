@@ -585,7 +585,14 @@ class OrderRequest(BaseModel):
 async def create_order(order: OrderRequest):
     logger.info(f"ORDER_REQUEST: product={order.product_id}, qty={order.quantity}, price={order.unit_price}")
     # VULNERABLE Lv.3: Trusts client-supplied unit_price without checking DB catalog price
-    total_amount = order.quantity * order.unit_price
+    # Verified against database catalog price (Lv.3 Guard)
+    cursor = sqlite3.connect(DB_FILE).cursor()
+    cursor.execute("SELECT price FROM products WHERE id = ?", (order.product_id,))
+    row = cursor.fetchone()
+    actual_price = row[0] if row else 1500
+    if order.unit_price != actual_price:
+        raise HTTPException(status_code=400, detail="Price tampering detected")
+    total_amount = order.quantity * actual_price
     if order.unit_price < 1500 and order.product_id == 1:
         store_breach_state["hacked_price"] = order.unit_price
     return {
