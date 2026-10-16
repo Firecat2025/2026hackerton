@@ -77,7 +77,7 @@ async def hud_dashboard():
                 <!-- 1-Click Auto-Battle Button -->
                 <button id="auto-battle-btn" onclick="startAutoBattle()" class="bg-gradient-to-r from-indigo-600 to-cyan-600 hover:from-indigo-500 hover:to-cyan-500 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition font-bold glow-indigo">
                     <i class="fa-solid fa-bolt"></i>
-                    <span>⚔️ Start Auto-Battle (3 Rounds)</span>
+                    <span>⚔️ Start Auto-Battle (5 Rounds)</span>
                 </button>
                 <button onclick="resetArena()" class="bg-rose-950/80 hover:bg-rose-900 text-rose-300 border border-rose-700/60 px-3.5 py-2 rounded-lg flex items-center space-x-2 transition font-bold">
                     <i class="fa-solid fa-arrow-rotate-left"></i>
@@ -99,7 +99,7 @@ async def hud_dashboard():
             <div id="battle-stepper" class="hidden bg-slate-900/90 border border-indigo-500/50 rounded-2xl p-4 glow-indigo">
                 <div class="flex justify-between items-center mb-2">
                     <span id="battle-step-title" class="text-xs font-bold text-indigo-300 uppercase tracking-wider">⚔️ Autonomous Cyber Battle in Progress...</span>
-                    <span id="battle-step-badge" class="text-xs font-mono bg-indigo-950 text-indigo-300 px-2.5 py-0.5 rounded border border-indigo-700">Round 1 / 3</span>
+                    <span id="battle-step-badge" class="text-xs font-mono bg-indigo-950 text-indigo-300 px-2.5 py-0.5 rounded border border-indigo-700">Round 1 / 5</span>
                 </div>
                 <div class="w-full bg-slate-950 h-2.5 rounded-full overflow-hidden border border-slate-800">
                     <div id="battle-progress-bar" class="bg-gradient-to-r from-rose-500 via-indigo-500 to-emerald-400 h-full transition-all duration-500" style="width: 10%"></div>
@@ -139,12 +139,12 @@ async def hud_dashboard():
                                 <span class="text-[9px] text-slate-400">Price Tamper</span>
                             </button>
                             <button onclick="triggerAttack('negative_qty_drain', 4)" class="bg-rose-900/30 hover:bg-rose-800/60 text-rose-200 border border-rose-700/50 rounded-lg p-2 text-[11px] font-semibold text-center transition flex flex-col items-center justify-center">
-                                <span>💸 Lv.4 Qty</span>
-                                <span class="text-[9px] text-slate-400">-$75K Refund</span>
+                                <span>💸 Lv.4 Refund</span>
+                                <span class="text-[9px] text-slate-400">+$75K Drain</span>
                             </button>
-                            <button onclick="triggerAttack('blind_sqli_probe', 5)" class="bg-rose-900/30 hover:bg-rose-800/60 text-rose-200 border border-rose-700/50 rounded-lg p-2 text-[11px] font-semibold text-center transition flex flex-col items-center justify-center">
-                                <span>🕵️ Lv.5 Blind</span>
-                                <span class="text-[9px] text-slate-400">Subquery SQLi</span>
+                            <button onclick="triggerAttack('admin_vault_leak', 5)" class="bg-rose-900/30 hover:bg-rose-800/60 text-rose-200 border border-rose-700/50 rounded-lg p-2 text-[11px] font-semibold text-center transition flex flex-col items-center justify-center">
+                                <span>🔑 Lv.5 Vault</span>
+                                <span class="text-[9px] text-slate-400">Key Leak</span>
                             </button>
                         </div>
                     </div>
@@ -435,44 +435,46 @@ async def hud_dashboard():
                 const rounds = [
                     { level: 1, scenario: 'sqli_search', name: 'SQL Injection Search Exfiltration (Lv.1)' },
                     { level: 2, scenario: 'auth_bypass', name: 'Admin Authentication Bypass (Lv.2)' },
-                    { level: 3, scenario: 'price_tampering', name: 'Zero-Dollar Order Price Tampering (Lv.3)' }
+                    { level: 3, scenario: 'price_tampering', name: 'Zero-Dollar Order Price Tampering (Lv.3)' },
+                    { level: 4, scenario: 'negative_qty_drain', name: 'Negative Quantity Refund Wallet Drain (Lv.4)' },
+                    { level: 5, scenario: 'admin_vault_leak', name: 'Admin PQC Key Vault RBAC Bypass (Lv.5)' }
                 ];
 
                 for (let i = 0; i < rounds.length; i++) {
                     const r = rounds[i];
-                    badge.textContent = `Round ${r.level} / 3`;
+                    badge.textContent = `Round ${r.level} / 5`;
 
                     // 1. Red Attack
-                    title.textContent = `🔴 Round ${r.level}: Red-Argon attacking ${r.name}...`;
-                    bar.style.width = `${15 + i * 28}%`;
-                    await triggerAttack(r.scenario, r.level);
-                    await sleep(1800);
-
-                    // 2. Blue Patch
-                    title.textContent = `🔵 Round ${r.level}: Blue-Argon patching vulnerability & committing to Git...`;
-                    bar.style.width = `${25 + i * 28}%`;
-                    await triggerDefensePatch(r.level);
-                    await sleep(2000);
-
-                    // 3. Re-Attack Verification
-                    title.textContent = `🛡️ Round ${r.level}: Re-running ${r.name} to verify Argon patch...`;
-                    bar.style.width = `${35 + i * 28}%`;
+                    title.textContent = `🔴 Round ${r.level}/5: Red-Argon attacking ${r.name}...`;
+                    bar.style.width = `${10 + i * 18}%`;
                     await triggerAttack(r.scenario, r.level);
                     await sleep(1500);
+
+                    // 2. Blue Patch
+                    title.textContent = `🔵 Round ${r.level}/5: Blue-Argon synthesizing AST patch & committing to Git...`;
+                    bar.style.width = `${16 + i * 18}%`;
+                    await triggerDefensePatch(r.level);
+                    await sleep(1700);
+
+                    // 3. Re-Attack Verification
+                    title.textContent = `🛡️ Round ${r.level}/5: Re-running ${r.name} to verify Argon patch...`;
+                    bar.style.width = `${22 + i * 18}%`;
+                    await triggerAttack(r.scenario, r.level);
+                    await sleep(1200);
                 }
 
-                title.textContent = '🏆 AUTO-BATTLE COMPLETE: All 3 Vulnerabilities Patched, Verified & Committed to Git!';
-                badge.textContent = '100% HARDENED';
+                title.textContent = '🏆 AUTO-BATTLE COMPLETE: All 5 Vulnerabilities (Lv.1~Lv.5) Patched, AST-Verified & Committed to Git!';
+                badge.textContent = '5/5 HARDENED';
                 bar.style.width = '100%';
             }
 
             async function resetArena() {
-                if(!confirm('Reset the cyber arena to the vulnerable baseline state?')) return;
+                if(!confirm('Reset the cyber arena to the vulnerable baseline state (5 vulnerabilities active)?')) return;
                 try {
                     await fetch('/api/arena/reset', { method: 'POST' });
                     currentAttackLevel = 0;
                     document.getElementById('battle-stepper').classList.add('hidden');
-                    document.getElementById('tab-content-diff').innerHTML = '<div class="text-amber-300 font-bold">⚡ Arena Reset to Vulnerable Baseline! All 3 vulnerabilities are active again.</div>';
+                    document.getElementById('tab-content-diff').innerHTML = '<div class="text-amber-300 font-bold">⚡ Arena Reset to Vulnerable Baseline! All 5 vulnerabilities (Lv.1~Lv.5) are active again.</div>';
                     await refreshGitLog();
                     await refreshLogs();
                     document.getElementById('red-result').innerText = '[Red Team Ready] Arena restored to vulnerable baseline.';

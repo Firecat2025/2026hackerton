@@ -1,19 +1,22 @@
 """
-Blue Team Autonomous Self-Healing & AST Patching Agent (CodeMender Architecture)
+Blue Team Autonomous Self-Healing & AST Patching Agent (v4.0 - 5 Vulnerability Rounds)
 Powered by Google Gemini 4 Argon (Interactions API with thinking_level='high')
 and Antigravity Sandbox Verification Loop (antigravity-preview-09-2026 + Python AST).
 
 Key Capabilities:
 1. Unified 1M Context Ingestion: Reads full active_target.py AST + live target_access.log attack telemetry.
 2. Frontier Reasoning: Calls client.interactions.create(model="gemini-4-argon", thinking_level="high")
-   to synthesize exact root-cause remediation code (before_code -> after_code).
+   to synthesize exact root-cause remediation code (before_code -> after_code) across 5 distinct rounds:
+   - Round 1 (Lv.1): GET /api/search Parameterized SQL Query
+   - Round 2 (Lv.2): POST /api/login Bound Credential Verification
+   - Round 3 (Lv.3): POST /api/order Server-Side DB Catalog Price Enforcement
+   - Round 4 (Lv.4): POST /api/refund Positive Quantity & Stock Bounds Guard
+   - Round 5 (Lv.5): GET /api/admin/export Cryptographic HMAC Admin Token RBAC Guard
 3. Closed-Loop AST & Sandbox Verification: Validates synthesized code with ast.parse() and
    antigravity-preview-09-2026 before writing to disk and committing to Git.
-4. Fail-Safe Hybrid Stability: Gracefully falls back to verified AST templates if offline during live demo.
 """
 
 import ast
-import difflib
 import json
 import logging
 import os
@@ -21,7 +24,7 @@ import re
 import sqlite3
 import subprocess
 import time
-from typing import Dict, Any, Optional, Tuple
+from typing import Dict, Any, Optional
 
 try:
     from dotenv import load_dotenv
@@ -74,7 +77,7 @@ class BlueArgonAgent:
         Real Executable Verification Loop:
         1. Parses both original and candidate patched full Python files into ASTs (`ast.parse`)
            to guarantee zero syntax regressions before hot-reload deployment.
-        2. Checks security invariants (parameterized SQL `?` bindings, server-side DB catalog price check).
+        2. Checks security invariants across all 5 rounds.
         3. Invokes Antigravity Managed Agent (`antigravity-preview-09-2026`) when remote sandbox is enabled.
         """
         vuln_nodes = 0
@@ -98,7 +101,8 @@ class BlueArgonAgent:
                 "WHERE name LIKE ?",
                 "WHERE username = ? AND password = ?",
                 "Price tampering detected",
-                "Quantity manipulation detected",
+                "Negative refund quantity blocked",
+                "Unauthorized admin vault access blocked",
             )
         )
 
@@ -154,13 +158,14 @@ class BlueArgonAgent:
             return None
 
         target_focus = {
-            1: "Round 1: SQL Injection in GET /api/search (`search_product` function using raw f-string `LIKE '%{q}%'`). Replace with parameterized SQLite query (`LIKE ?`, `(f'%{q}%',)`).",
-            2: "Round 2: Authentication Bypass SQLi in POST /api/login (`login` function using raw f-string `WHERE username = '{req.username}'`). Replace with parameterized SQLite query (`WHERE username = ? AND password = ?`).",
-            3: "Round 3: Business Logic Price Tampering in POST /api/order (`create_order` function trusting client `order.unit_price` and `order.quantity`). Query actual `price` from `products` table by `order.product_id` and raise `HTTPException(status_code=400, detail='Price tampering detected')` if `order.quantity <= 0` or `order.unit_price != actual_price`.",
-            4: "Round 4: Negative Quantity / Inventory Drain exploit in POST /api/order (`create_order` allowing `order.quantity <= 0` or exceeding stock). Enforce strict server-side quantity and catalog price verification.",
+            1: "Round 1 (Lv.1): SQL Injection in GET /api/search (`search_product` using raw f-string `LIKE '%{q}%'`). Replace with parameterized SQLite query (`WHERE name LIKE ?`, `(f'%{q}%',)`).",
+            2: "Round 2 (Lv.2): Authentication Bypass SQLi in POST /api/login (`login` using raw f-string `WHERE username = '{req.username}'`). Replace with parameterized SQLite query (`WHERE username = ? AND password = ?`).",
+            3: "Round 3 (Lv.3): Zero-Dollar Price Tampering in POST /api/order (`create_order` trusting client `order.unit_price`). Query actual `price` from `products` table by `order.product_id` and raise `HTTPException(status_code=400, detail='Price tampering detected')` if `order.unit_price != actual_price`.",
+            4: "Round 4 (Lv.4): Negative Quantity Refund Drain in POST /api/refund (`process_refund` allowing `req.quantity <= 0`). Enforce positive quantity bounds (`if req.quantity <= 0 or req.quantity > 10: raise HTTPException(status_code=400, detail='Negative refund quantity blocked')`).",
+            5: "Round 5 (Lv.5): Broken Access Control in GET /api/admin/export (`export_admin_vault` missing `x_admin_token` check). Verify `hmac.compare_digest(x_admin_token, os.environ.get('ADMIN_VAULT_TOKEN', 'VIBE_ROOT_HSM_TOKEN_2026'))` and raise `HTTPException(status_code=403, detail='Unauthorized admin vault access blocked')` if invalid.",
         }.get(
             round_num,
-            "Locate the next unpatched vulnerability in `active_target.py` (SQLi in `/api/search`, Auth Bypass in `/api/login`, or Price/Quantity Tampering in `/api/order`) and synthesize a minimal, exact Python replacement block.",
+            "Locate the next unpatched vulnerability in `active_target.py` (Lv.1 /api/search, Lv.2 /api/login, Lv.3 /api/order, Lv.4 /api/refund, or Lv.5 /api/admin/export) and synthesize a minimal, exact Python replacement block.",
         )
 
         prompt = f"""[SYSTEM: GEMINI 4 ARGON AUTONOMOUS BLUE TEAM CODEMENDER ENGINE]
@@ -180,7 +185,7 @@ You are an autonomous self-healing cybersecurity engineer protecting a live Fast
 [4. INSTRUCTIONS]
 Analyze the vulnerable AST and synthesize an exact drop-in replacement block that fixes the vulnerability while preserving all FastAPI routes and indentation.
 Return ONLY valid JSON (no markdown fences) with these exact keys:
-- "target_endpoint": string (e.g. "GET /api/search", "POST /api/login", or "POST /api/order")
+- "target_endpoint": string (e.g. "GET /api/search", "POST /api/login", "POST /api/order", "POST /api/refund", or "GET /api/admin/export")
 - "description": string (concise 1-line summary starting with "[Argon Lv.X] ...")
 - "root_cause": string (technical root cause & CWE ID)
 - "before_code": string (the exact verbatim multi-line substring from `active_target.py` to be replaced)
@@ -188,8 +193,6 @@ Return ONLY valid JSON (no markdown fences) with these exact keys:
 """
 
         logger.info(f"Invoking Gemini 4 Argon Interactions API (thinking_level='high') for Round {round_num}...")
-        # Official Gemini 4 Argon Interactions API call
-        # Note: Do NOT pass deprecated sampling parameters (temperature, top_p, top_k, thinking_budget)
         interaction = self.client.interactions.create(
             model=self.model_name,
             input=prompt,
@@ -234,7 +237,7 @@ Return ONLY valid JSON (no markdown fences) with these exact keys:
             "patched_full_code": candidate_code,
             "target_endpoint": parsed.get("target_endpoint", "FastAPI Endpoint"),
             "description": parsed.get("description", f"[Argon Lv.{round_num}] Autonomous AST Security Patch"),
-            "root_cause": parsed.get("root_cause", "CWE-89 / CWE-840 Application Vulnerability"),
+            "root_cause": parsed.get("root_cause", "CWE Application Vulnerability"),
             "before_code": before_code,
             "after_code": after_code,
             "verification_loop": verification,
@@ -243,45 +246,66 @@ Return ONLY valid JSON (no markdown fences) with these exact keys:
 
     def _deterministic_ast_fallback(self, current_code: str, round_num: int) -> Optional[Dict[str, Any]]:
         """
-        Fail-safe verified AST patcher used if GEMINI_API_KEY is absent or network is unreachable
-        during live stage demonstration. Ensures 100% pass rate on the verification loop.
+        Fail-safe verified AST patcher across all 5 vulnerability rounds (Lv.1 ~ Lv.5).
+        Used if GEMINI_API_KEY is absent or network is unreachable during live stage demonstration.
         """
-        vuln_search = r'query = f"SELECT id, name, price, stock FROM products WHERE name LIKE \'%\{q\}%\'"\s*cursor\.execute\(query\)'
-        before_search = 'query = f"SELECT id, name, price, stock FROM products WHERE name LIKE \'%{q}%\'"\n        cursor.execute(query)'
-        patched_search = 'query = "SELECT id, name, price, stock FROM products WHERE name LIKE ?"\n        cursor.execute(query, (f"%{q}%",))'
+        # Lv.1: Search SQLi
+        vuln_lv1 = r'query = f"SELECT id, name, price, stock FROM products WHERE name LIKE \'%\{q\}%\'"\s*cursor\.execute\(query\)'
+        before_lv1 = 'query = f"SELECT id, name, price, stock FROM products WHERE name LIKE \'%{q}%\'"\n        cursor.execute(query)'
+        patched_lv1 = 'query = "SELECT id, name, price, stock FROM products WHERE name LIKE ?"\n        cursor.execute(query, (f"%{q}%",))'
 
-        vuln_login = r'query = f"SELECT id, username, role, secret_flag FROM users WHERE username = \'\{req\.username\}\' AND password = \'\{req\.password\}\'"\s*cursor\.execute\(query\)'
-        before_login = "query = f\"SELECT id, username, role, secret_flag FROM users WHERE username = '{req.username}' AND password = '{req.password}'\"\n        cursor.execute(query)"
-        patched_login = 'query = "SELECT id, username, role, secret_flag FROM users WHERE username = ? AND password = ?"\n        cursor.execute(query, (req.username, req.password))'
+        # Lv.2: Login Auth Bypass SQLi
+        vuln_lv2 = r'query = f"SELECT id, username, role, secret_flag FROM users WHERE username = \'\{req\.username\}\' AND password = \'\{req\.password\}\'"\s*cursor\.execute\(query\)'
+        before_lv2 = "query = f\"SELECT id, username, role, secret_flag FROM users WHERE username = '{req.username}' AND password = '{req.password}'\"\n        cursor.execute(query)"
+        patched_lv2 = 'query = "SELECT id, username, role, secret_flag FROM users WHERE username = ? AND password = ?"\n        cursor.execute(query, (req.username, req.password))'
 
-        vuln_order = r'total_amount = order\.quantity \* order\.unit_price'
-        before_order = 'total_amount = order.quantity * order.unit_price'
-        patched_order = (
-            '# Verified against database catalog price & positive quantity guard\n'
+        # Lv.3: Zero-Dollar Price Tampering in /api/order
+        vuln_lv3 = r'total_amount = order\.quantity \* order\.unit_price'
+        before_lv3 = 'total_amount = order.quantity * order.unit_price'
+        patched_lv3 = (
+            '# Verified against database catalog price (Lv.3 Guard)\n'
             '    cursor = sqlite3.connect(DB_FILE).cursor()\n'
-            '    cursor.execute("SELECT price, stock FROM products WHERE id = ?", (order.product_id,))\n'
+            '    cursor.execute("SELECT price FROM products WHERE id = ?", (order.product_id,))\n'
             '    row = cursor.fetchone()\n'
-            '    actual_price = row[0] if row else 1000\n'
-            '    if order.quantity <= 0 or order.quantity > 1000 or order.unit_price != actual_price:\n'
+            '    actual_price = row[0] if row else 1500\n'
+            '    if order.unit_price != actual_price:\n'
             '        raise HTTPException(status_code=400, detail="Price tampering detected")\n'
             '    total_amount = order.quantity * actual_price'
         )
 
-        candidates = []
-        if round_num == 1:
-            candidates = [(1, vuln_search, before_search, patched_search, "GET /api/search", "[Argon Lv.1] Refactored raw f-string SQL into parameterized query (?) in /api/search", "CWE-89: Improper Neutralization of Special Elements used in an SQL Command")]
-        elif round_num == 2:
-            candidates = [(2, vuln_login, before_login, patched_login, "POST /api/login", "[Argon Lv.2] Neutralized Auth Bypass SQLi with bound parameters in /api/login", "CWE-287 & CWE-89: Authentication Bypass via SQL Injection Tautology")]
-        elif round_num in (3, 4):
-            candidates = [(3, vuln_order, before_order, patched_order, "POST /api/order", "[Argon Lv.3] Enforced server-side DB catalog price & quantity validation in /api/order", "CWE-840: Business Logic Bypass / Client-Side Price & Quantity Tampering")]
-        else:
-            candidates = [
-                (1, vuln_search, before_search, patched_search, "GET /api/search", "[Argon Lv.1] Refactored raw f-string SQL into parameterized query (?) in /api/search", "CWE-89: Improper Neutralization of Special Elements used in an SQL Command"),
-                (2, vuln_login, before_login, patched_login, "POST /api/login", "[Argon Lv.2] Neutralized Auth Bypass SQLi with bound parameters in /api/login", "CWE-287 & CWE-89: Authentication Bypass via SQL Injection Tautology"),
-                (3, vuln_order, before_order, patched_order, "POST /api/order", "[Argon Lv.3] Enforced server-side DB catalog price & quantity validation in /api/order", "CWE-840: Business Logic Bypass / Client-Side Price & Quantity Tampering"),
-            ]
+        # Lv.4: Negative Quantity Refund Drain in /api/refund
+        vuln_lv4 = r'wallet_credit = abs\(req\.quantity\) \* req\.unit_price'
+        before_lv4 = 'wallet_credit = abs(req.quantity) * req.unit_price'
+        patched_lv4 = (
+            '# Enforced positive refund quantity & stock bounds check (Lv.4 Guard)\n'
+            '    if req.quantity <= 0 or req.quantity > 10:\n'
+            '        raise HTTPException(status_code=400, detail="Negative refund quantity blocked")\n'
+            '    wallet_credit = req.quantity * req.unit_price'
+        )
 
-        for lvl, pattern, before_snip, after_snip, endpoint, desc, root_cause in candidates:
+        # Lv.5: Broken Access Control in /api/admin/export
+        vuln_lv5 = r'vault_secret = "FLAG\{VIBE_MASTER_PQC_VAULT_KEY_2026\}"'
+        before_lv5 = 'vault_secret = "FLAG{VIBE_MASTER_PQC_VAULT_KEY_2026}"'
+        patched_lv5 = (
+            '# Enforced constant-time HMAC Admin Vault RBAC verification (Lv.5 Guard)\n'
+            '    expected_token = os.environ.get("ADMIN_VAULT_TOKEN", "VIBE_ROOT_HSM_TOKEN_2026")\n'
+            '    if not x_admin_token or not hmac.compare_digest(x_admin_token, expected_token):\n'
+            '        raise HTTPException(status_code=403, detail="Unauthorized admin vault access blocked")\n'
+            '    vault_secret = "FLAG{VIBE_MASTER_PQC_VAULT_KEY_2026}"'
+        )
+
+        all_rounds = [
+            (1, vuln_lv1, before_lv1, patched_lv1, "GET /api/search", "[Argon Lv.1] Refactored raw f-string SQL into parameterized query (?) in /api/search", "CWE-89: Improper Neutralization of Special Elements used in an SQL Command"),
+            (2, vuln_lv2, before_lv2, patched_lv2, "POST /api/login", "[Argon Lv.2] Neutralized Auth Bypass SQLi with bound parameters in /api/login", "CWE-287 & CWE-89: Authentication Bypass via SQL Injection Tautology"),
+            (3, vuln_lv3, before_lv3, patched_lv3, "POST /api/order", "[Argon Lv.3] Enforced server-side DB catalog price verification in /api/order", "CWE-840: Business Logic Bypass / Client-Side Price Tampering"),
+            (4, vuln_lv4, before_lv4, patched_lv4, "POST /api/refund", "[Argon Lv.4] Blocked negative quantity refund drain with strict bounds check in /api/refund", "CWE-20 & CWE-840: Improper Input Validation (Negative Quantity Credit Drain)"),
+            (5, vuln_lv5, before_lv5, patched_lv5, "GET /api/admin/export", "[Argon Lv.5] Enforced constant-time HMAC Admin Token RBAC guard on /api/admin/export", "CWE-284 & CWE-862: Missing Authorization on Critical Admin Vault Resource"),
+        ]
+
+        # Prioritize the requested round_num first, then fall back to next unpatched vulnerability
+        ordered_candidates = [r for r in all_rounds if r[0] == round_num] + [r for r in all_rounds if r[0] != round_num]
+
+        for lvl, pattern, before_snip, after_snip, endpoint, desc, root_cause in ordered_candidates:
             if re.search(pattern, current_code):
                 candidate_code = re.sub(pattern, after_snip, current_code, count=1)
                 verification = self._execute_sandbox_verification_loop(lvl, current_code, candidate_code)
@@ -331,7 +355,7 @@ Return ONLY valid JSON (no markdown fences) with these exact keys:
         if not patch_result:
             return {
                 "status": "already_clean",
-                "message": "All vulnerabilities in active_target.py are already patched and AST-verified! Click 'Reset Arena' to restore baseline.",
+                "message": "All 5 vulnerabilities (Lv.1 ~ Lv.5) in active_target.py are already patched and AST-verified! Click 'Reset Arena' to restore baseline.",
             }
 
         # Step 3: Write verified patched code to disk (triggers Uvicorn 0.3s hot-reload)
@@ -397,7 +421,7 @@ Return ONLY valid JSON (no markdown fences) with these exact keys:
 
             return {
                 "status": "reset_complete",
-                "message": "Arena reset to vulnerable baseline in 0.1s. Ready for new evaluation round!"
+                "message": "Arena reset to vulnerable baseline (5 vulnerabilities active) in 0.1s!"
             }
         except Exception as e:
             return {"status": "error", "message": f"Reset failed: {str(e)}"}
