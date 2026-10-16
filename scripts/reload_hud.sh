@@ -2,11 +2,13 @@
 export PATH="$HOME/.local/bin:$PATH"
 cd /home/PC/vibe-defender
 pkill -f "active_target:app" || true
+pkill -f "red_server.py" || true
 pkill -f "blue_server.py" || true
 pkill -f "server:app" || true
 sleep 1
 nohup python3 -m uvicorn active_target:app --host 127.0.0.1 --port 8002 --reload > target.log 2>&1 &
+nohup python3 red_server.py > red.log 2>&1 &
 nohup python3 blue_server.py > blue.log 2>&1 &
 nohup python3 -m uvicorn server:app --host 127.0.0.1 --port 8080 > server.log 2>&1 &
 sleep 2
-echo "Target, HUD, and Blue Server Reloaded!"
+echo "Target, Red, Blue, and HUD Servers Reloaded!"

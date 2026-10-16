@@ -120,24 +120,36 @@ async def hud_dashboard():
                                 Argon thinking_level="medium"
                             </span>
                         </div>
-                        <p class="text-xs text-slate-400 mb-4">Generates polymorphic exploit payloads against target e-commerce endpoints:</p>
-                        <div class="grid grid-cols-3 gap-2.5 mb-4">
-                            <button onclick="triggerAttack('sqli_search', 1)" class="bg-rose-900/30 hover:bg-rose-800/60 text-rose-200 border border-rose-700/50 rounded-xl p-3 text-xs font-semibold text-center transition flex flex-col items-center justify-center space-y-1">
-                                <span class="text-sm">💉 SQLi Search</span>
-                                <span class="text-[10px] text-slate-400">Data Exfiltration (Lv.1)</span>
+                        <p class="text-xs text-slate-400 mb-3">Autonomous target AST reconnaissance & polymorphic exploit synthesis:</p>
+                        <button onclick="triggerAttack('autonomous_recon', 0)" class="w-full mb-2.5 bg-gradient-to-r from-rose-600 to-amber-600 hover:from-rose-500 hover:to-amber-500 text-white font-bold py-2.5 px-4 rounded-xl text-xs transition flex items-center justify-center space-x-2 shadow-lg shadow-rose-600/30 border border-rose-400/40">
+                            <i class="fa-solid fa-brain"></i>
+                            <span>🧠 Red-Argon Autonomous Next Exploit (1-by-1 Recon & Attack)</span>
+                        </button>
+                        <div class="grid grid-cols-5 gap-1.5 mb-3">
+                            <button onclick="triggerAttack('sqli_search', 1)" class="bg-rose-900/30 hover:bg-rose-800/60 text-rose-200 border border-rose-700/50 rounded-lg p-2 text-[11px] font-semibold text-center transition flex flex-col items-center justify-center">
+                                <span>💉 Lv.1 SQLi</span>
+                                <span class="text-[9px] text-slate-400">UNION Dump</span>
                             </button>
-                            <button onclick="triggerAttack('auth_bypass', 2)" class="bg-rose-900/30 hover:bg-rose-800/60 text-rose-200 border border-rose-700/50 rounded-xl p-3 text-xs font-semibold text-center transition flex flex-col items-center justify-center space-y-1">
-                                <span class="text-sm">🔓 Auth Bypass</span>
-                                <span class="text-[10px] text-slate-400">Admin Bypass (Lv.2)</span>
+                            <button onclick="triggerAttack('auth_bypass', 2)" class="bg-rose-900/30 hover:bg-rose-800/60 text-rose-200 border border-rose-700/50 rounded-lg p-2 text-[11px] font-semibold text-center transition flex flex-col items-center justify-center">
+                                <span>🔓 Lv.2 Auth</span>
+                                <span class="text-[9px] text-slate-400">OR 1=1 Bypass</span>
                             </button>
-                            <button onclick="triggerAttack('price_tampering', 3)" class="bg-rose-900/30 hover:bg-rose-800/60 text-rose-200 border border-rose-700/50 rounded-xl p-3 text-xs font-semibold text-center transition flex flex-col items-center justify-center space-y-1">
-                                <span class="text-sm">🏷️ Price Exploit</span>
-                                <span class="text-[10px] text-slate-400">Logic Tampering (Lv.3)</span>
+                            <button onclick="triggerAttack('price_tampering', 3)" class="bg-rose-900/30 hover:bg-rose-800/60 text-rose-200 border border-rose-700/50 rounded-lg p-2 text-[11px] font-semibold text-center transition flex flex-col items-center justify-center">
+                                <span>🏷️ Lv.3 $0</span>
+                                <span class="text-[9px] text-slate-400">Price Tamper</span>
+                            </button>
+                            <button onclick="triggerAttack('negative_qty_drain', 4)" class="bg-rose-900/30 hover:bg-rose-800/60 text-rose-200 border border-rose-700/50 rounded-lg p-2 text-[11px] font-semibold text-center transition flex flex-col items-center justify-center">
+                                <span>💸 Lv.4 Qty</span>
+                                <span class="text-[9px] text-slate-400">-$75K Refund</span>
+                            </button>
+                            <button onclick="triggerAttack('blind_sqli_probe', 5)" class="bg-rose-900/30 hover:bg-rose-800/60 text-rose-200 border border-rose-700/50 rounded-lg p-2 text-[11px] font-semibold text-center transition flex flex-col items-center justify-center">
+                                <span>🕵️ Lv.5 Blind</span>
+                                <span class="text-[9px] text-slate-400">Subquery SQLi</span>
                             </button>
                         </div>
                     </div>
-                    <div id="red-result" class="bg-slate-950/90 p-3.5 rounded-xl border border-slate-800/80 font-mono text-xs text-rose-300 min-h-[90px] overflow-auto">
-                        [Red Team Ready] Select an attack scenario (Lv.1 ~ Lv.3) or click 'Start Auto-Battle'.
+                    <div id="red-result" class="bg-slate-950/90 p-3.5 rounded-xl border border-slate-800/80 font-mono text-xs text-rose-300 min-h-[95px] overflow-auto">
+                        [Red Team Ready] Click '🧠 Red-Argon Autonomous Next Exploit' for 1-by-1 AI discovery, or pick Lv.1~Lv.5!
                     </div>
                 </div>
 
@@ -150,22 +162,22 @@ async def hud_dashboard():
                                 <span class="tracking-wider">BLUE DEFENDER // Port 8004</span>
                             </div>
                             <span class="text-[11px] font-mono bg-cyan-950/80 text-cyan-400 px-2.5 py-0.5 rounded-full border border-cyan-800">
-                                Argon thinking_level="high"
+                                Argon thinking_level="high" • AST Verifier
                             </span>
                         </div>
-                        <p class="text-xs text-slate-400 mb-4">Deep telemetry reasoning, automated code refactoring & live Git commit:</p>
+                        <p class="text-xs text-slate-400 mb-4">1M Context AST reasoning, Antigravity Sandbox verification (`ast.parse`) & live Git commit:</p>
                         <div class="flex space-x-3 mb-4">
                             <button onclick="triggerDefensePatch()" class="flex-1 bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-3 px-4 rounded-xl text-xs transition flex items-center justify-center space-x-2 shadow-lg shadow-cyan-600/30">
                                 <i class="fa-solid fa-wand-magic-sparkles"></i>
-                                <span>Gemini 4 Argon Autonomous Patch & Git Commit</span>
+                                <span>🛡️ Gemini 4 Argon Autonomous Patch & Git Commit</span>
                             </button>
                             <button onclick="refreshDiff()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-4 py-3 rounded-xl text-xs font-mono border border-slate-700 transition" title="Refresh Git Diff">
                                 <i class="fa-solid fa-rotate"></i>
                             </button>
                         </div>
                     </div>
-                    <div id="blue-result" class="bg-slate-950/90 p-3.5 rounded-xl border border-slate-800/80 font-mono text-xs text-cyan-300 min-h-[90px] overflow-auto">
-                        [Blue Team Ready] Monitoring telemetry stream for breach events...
+                    <div id="blue-result" class="bg-slate-950/90 p-3.5 rounded-xl border border-slate-800/80 font-mono text-xs text-cyan-300 min-h-[95px] overflow-auto">
+                        [Blue Team Ready] Waiting for adversary breach telemetry to synthesize AST patch...
                     </div>
                 </div>
             </div>
@@ -353,15 +365,19 @@ async def hud_dashboard():
             async function triggerAttack(scenario, level) {
                 currentAttackLevel = level;
                 const redBox = document.getElementById('red-result');
-                redBox.innerHTML = '<span class="text-slate-400">Generating Gemini 4 Argon payload and dispatching exploit...</span>';
+                redBox.innerHTML = '<span class="text-slate-400">🧠 Gemini 4 Argon (Medium) inspecting target AST & synthesizing exploit payload...</span>';
                 try {
                     const res = await fetch(`/api/attack?scenario=${scenario}&level=${level}`, { method: 'POST' });
                     const data = await res.json();
+                    if (data.level) currentAttackLevel = data.level;
                     let html = `<div><strong>[Attack Result]</strong> ${data.breached ? '<span class="text-rose-400 font-bold">🚨 TARGET BREACHED (VULNERABLE)</span>' : '<span class="text-emerald-400 font-bold">🛡️ ATTACK BLOCKED (PROTECTED BY ARGON PATCH)</span>'}</div>`;
                     if (data.flag) {
-                        html += `<div class="text-amber-400 font-bold mt-1">🚩 Flag Exfiltrated: ${data.flag}</div>`;
+                        html += `<div class="text-amber-400 font-bold mt-1">🚩 Flag Exfiltrated: ${escapeHtml(data.flag)}</div>`;
                     }
-                    html += `<div class="text-slate-400 text-[11px] mt-1">${data.payload?.description || ''}</div>`;
+                    if (data.payload?.reasoning) {
+                        html += `<div class="text-cyan-300 text-[11px] mt-1">🧠 <strong>Argon Recon:</strong> ${escapeHtml(data.payload.reasoning)}</div>`;
+                    }
+                    html += `<div class="text-slate-400 text-[11px] mt-0.5">🎯 ${escapeHtml(data.payload?.description || '')}</div>`;
                     redBox.innerHTML = html;
                     await refreshLogs();
                     return data;
@@ -374,15 +390,21 @@ async def hud_dashboard():
             async function triggerDefensePatch(levelOverride = null) {
                 const lvl = levelOverride !== null ? levelOverride : currentAttackLevel;
                 const blueBox = document.getElementById('blue-result');
-                blueBox.innerHTML = '<span class="text-slate-400">Gemini 4 Argon (High) analyzing AST and synthesizing security patch...</span>';
+                blueBox.innerHTML = '<span class="text-slate-400">🛡️ Gemini 4 Argon (High) analyzing AST, verifying with ast.parse() & committing patch...</span>';
                 try {
                     const res = await fetch(`/api/defense/patch?round_num=${lvl}`, { method: 'POST' });
                     const data = await res.json();
                     if (data.status === 'patched') {
-                        blueBox.innerHTML = `<div><strong>[Patch Applied]</strong> ${data.description}</div><div class="text-xs text-emerald-400 mt-1">Git Commit: ${data.commit_hash} • Target: ${data.target_endpoint}</div>`;
+                        const vLoop = data.verification_loop || {};
+                        blueBox.innerHTML = `
+                            <div><strong>[Patch Applied]</strong> ${escapeHtml(data.description)}</div>
+                            ${data.root_cause ? `<div class="text-[11px] text-amber-300 mt-1">🔍 <strong>Root Cause:</strong> ${escapeHtml(data.root_cause)}</div>` : ''}
+                            ${vLoop.stage_3_regression_check ? `<div class="text-[11px] text-emerald-300 mt-0.5">🧪 <strong>Verification Loop:</strong> ${escapeHtml(vLoop.stage_3_regression_check)} (${escapeHtml(vLoop.ast_nodes_delta || '')})</div>` : ''}
+                            <div class="text-[11px] text-cyan-400 mt-0.5">📦 Git Commit: <strong>#${escapeHtml(data.commit_hash)}</strong> • Target: ${escapeHtml(data.target_endpoint)}</div>
+                        `;
                         document.getElementById('inspected-commit-label').textContent = `📍 Viewing Latest Patch [${data.commit_hash}]: ${data.target_endpoint}`;
                     } else {
-                        blueBox.innerHTML = `<div><strong>[Info]</strong> ${data.message}</div>`;
+                        blueBox.innerHTML = `<div><strong>[Info]</strong> ${escapeHtml(data.message)}</div>`;
                     }
                     await refreshDiff(data);
                     await refreshGitLog();
@@ -576,8 +598,10 @@ async def trigger_attack(scenario: str = "sqli_search", level: int = 1):
     try:
         res = requests.post(f"{RED_HOST}/attack?scenario={scenario}&level={level}", timeout=10)
         data = res.json()
+        resolved_lvl = data.get("level", level)
+        arena_state["last_attacked_level"] = resolved_lvl
         log_lvl = "BREACH" if data.get("breached") else "INFO"
-        add_event("RED_AGENT", log_lvl, f"Scenario: {scenario} (Lv.{level}) -> Breached: {data.get('breached')}", data)
+        add_event("RED_AGENT", log_lvl, f"Scenario: {data.get('scenario', scenario)} (Lv.{resolved_lvl}) -> Breached: {data.get('breached')}", data)
         return data
     except Exception as e:
         add_event("RED_AGENT", "ERROR", f"Attack request failed: {str(e)}")
