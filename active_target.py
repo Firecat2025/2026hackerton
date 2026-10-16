@@ -214,47 +214,21 @@ async def storefront():
                 <div id="live-breach-details" class="mt-3 bg-slate-950/90 border border-rose-500/50 rounded-xl p-3 mono text-xs text-amber-300 space-y-1"></div>
             </div>
 
-            <!-- Hero Banner + 1-Click Judge Exploit Bar (All 5 Attacks) -->
-            <div class="bg-gradient-to-r from-slate-900 via-indigo-950/60 to-slate-900 border border-indigo-500/30 rounded-2xl p-6 flex flex-col lg:flex-row justify-between items-center gap-6">
-                <div class="space-y-2">
-                    <div class="inline-flex items-center space-x-2 bg-indigo-500/10 border border-indigo-500/30 text-indigo-300 text-xs font-bold px-3 py-1 rounded-full">
-                        <i class="fa-solid fa-bolt"></i>
-                        <span>LIVE E-COMMERCE TARGET APPLICATION (5 VULNERABILITY VECTORS)</span>
+            <!-- Store Hero Banner -->
+            <div class="bg-gradient-to-r from-slate-900 via-slate-900 to-indigo-950/60 border border-slate-800 rounded-2xl p-6 flex flex-col sm:flex-row justify-between items-center gap-4">
+                <div class="space-y-1">
+                    <div class="inline-flex items-center space-x-2 bg-cyan-950 text-cyan-400 text-xs font-bold px-3 py-1 rounded-full border border-cyan-800">
+                        <i class="fa-solid fa-microchip"></i>
+                        <span>Featured Hardware Catalog</span>
                     </div>
-                    <h1 class="text-2xl font-extrabold text-white">Next-Gen AI & Post-Quantum Security Hardware</h1>
-                    <p class="text-slate-400 text-xs max-w-xl">
-                        Test any of the 5 exploits below (or from the Cyber Arena HUD). When breached, this storefront visibly mutates in real time; when patched by <strong class="text-cyan-300">Gemini 4 Argon</strong>, it self-heals automatically!
-                    </p>
+                    <h1 class="text-2xl font-black text-white tracking-wide">Next-Gen Quantum & Neural Security Hardware</h1>
+                    <p class="text-slate-400 text-xs">High-performance AI accelerators, neural firewalls, and cryptographic keyrings for enterprise datacenters.</p>
                 </div>
-
-                <!-- Judge Quick Exploit Test Buttons (Lv.1 ~ Lv.5) -->
-                <div class="bg-slate-950/90 border border-rose-500/40 rounded-xl p-4 w-full lg:w-auto min-w-[440px]">
-                    <div class="text-xs font-bold text-rose-400 uppercase tracking-wider mb-2.5 flex items-center justify-between">
-                        <span><i class="fa-solid fa-bug mr-1.5"></i>Judge Live Exploit Tester (5 Vectors)</span>
-                        <span class="text-[10px] mono bg-rose-950 text-rose-300 px-2 py-0.5 rounded border border-rose-800">Try Before & After Patch!</span>
-                    </div>
-                    <div class="grid grid-cols-5 gap-1.5">
-                        <button onclick="runStoreExploit('sqli')" class="bg-rose-900/40 hover:bg-rose-700/60 border border-rose-600/50 text-rose-200 rounded-lg p-2 text-[11px] font-bold transition text-center">
-                            💉 Lv.1 SQLi
-                            <span class="block text-[9px] text-rose-300/80 font-normal">DB Dump</span>
-                        </button>
-                        <button onclick="runStoreExploit('auth')" class="bg-rose-900/40 hover:bg-rose-700/60 border border-rose-600/50 text-rose-200 rounded-lg p-2 text-[11px] font-bold transition text-center">
-                            🔓 Lv.2 Auth
-                            <span class="block text-[9px] text-rose-300/80 font-normal">Root Hijack</span>
-                        </button>
-                        <button onclick="runStoreExploit('price')" class="bg-rose-900/40 hover:bg-rose-700/60 border border-rose-600/50 text-rose-200 rounded-lg p-2 text-[11px] font-bold transition text-center">
-                            🏷️ Lv.3 $0
-                            <span class="block text-[9px] text-rose-300/80 font-normal">Price Hack</span>
-                        </button>
-                        <button onclick="runStoreExploit('refund')" class="bg-rose-900/40 hover:bg-rose-700/60 border border-rose-600/50 text-rose-200 rounded-lg p-2 text-[11px] font-bold transition text-center">
-                            💸 Lv.4 Refund
-                            <span class="block text-[9px] text-rose-300/80 font-normal">+$75K Drain</span>
-                        </button>
-                        <button onclick="runStoreExploit('vault')" class="bg-rose-900/40 hover:bg-rose-700/60 border border-rose-600/50 text-rose-200 rounded-lg p-2 text-[11px] font-bold transition text-center">
-                            🔑 Lv.5 Vault
-                            <span class="block text-[9px] text-rose-300/80 font-normal">Key Leak</span>
-                        </button>
-                    </div>
+                <div class="flex items-center space-x-2 font-mono text-xs">
+                    <span class="bg-emerald-950 text-emerald-400 border border-emerald-800 px-3 py-1.5 rounded-lg flex items-center space-x-2">
+                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                        <span id="store-live-status-label">STORE ONLINE // HEALTHY</span>
+                    </span>
                 </div>
             </div>
 
