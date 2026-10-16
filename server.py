@@ -295,23 +295,52 @@ async def hud_dashboard():
                     html += `<div class="bg-indigo-950/60 border border-indigo-700/60 px-3 py-2 rounded-lg text-indigo-200 text-[11px] font-bold mb-2">🕰️ Time-Machine Commit: ${escapeHtml(commitTitle)}</div>`;
                 }
 
-                if (patchInfo && patchInfo.before_code && patchInfo.after_code) {
+                if (rawDiff === 'CLEAN_BASELINE_STATE') {
                     html += `
-                        <div class="mb-3">
-                            <div class="text-[11px] font-bold text-cyan-400 mb-1.5 flex items-center justify-between">
-                                <span>📍 Target Location: ${escapeHtml(patchInfo.target_endpoint || 'active_target.py')}</span>
-                                <span>Commit: ${escapeHtml(patchInfo.commit_hash || 'HEAD')}</span>
+                        <div class="bg-amber-950/30 border-2 border-amber-500/50 rounded-xl p-4 space-y-2">
+                            <div class="text-amber-300 font-extrabold text-xs uppercase tracking-wider flex items-center space-x-2">
+                                <i class="fa-solid fa-sparkles"></i>
+                                <span>🔄 CLEAN BASELINE STATE RESTORED (0 Patches Active)</span>
                             </div>
-                            <div class="bg-rose-950/40 border-l-4 border-rose-500 p-2.5 rounded-r-lg mb-2">
-                                <div class="text-[10px] font-bold text-rose-400 uppercase mb-1">❌ BEFORE (Vulnerable Code Removed)</div>
+                            <p class="text-slate-300 text-[11px]">
+                                Target repository (<code class="text-cyan-300">active_target.py</code>) and telemetry stream have been wiped clean and restored to the initial baseline with <strong>all 5 vulnerabilities (Lv.1 ~ Lv.5) active</strong>.
+                            </p>
+                            <div class="text-[11px] text-emerald-300 bg-slate-950/80 border border-slate-800 rounded-lg p-2.5">
+                                💡 <strong>Tip:</strong> Launch a new attack above, or click any green <strong>[🛡️ ARGON PATCH]</strong> commit card in the Git Time-Machine below to inspect past Argon patches & Sandbox Reproduction Tests!
+                            </div>
+                        </div>
+                    `;
+                    viewer.innerHTML = html;
+                    return;
+                }
+
+                if (patchInfo && patchInfo.before_code && patchInfo.after_code) {
+                    const vLoop = patchInfo.verification_loop || {};
+                    html += `
+                        <div class="mb-3 space-y-2.5">
+                            <div class="text-[11px] font-bold text-cyan-400 flex items-center justify-between bg-slate-900/90 px-3 py-1.5 rounded-lg border border-cyan-900/50">
+                                <span>📍 Step 1 (Repo Scan & Call-Site): ${escapeHtml(patchInfo.target_endpoint || 'active_target.py')}</span>
+                                <span>Commit: #${escapeHtml(patchInfo.commit_hash || 'HEAD')}</span>
+                            </div>
+                            ${vLoop.reproduction_test_code ? `
+                            <div class="bg-indigo-950/40 border-l-4 border-indigo-400 p-2.5 rounded-r-lg">
+                                <div class="text-[10px] font-bold text-indigo-300 uppercase mb-1 flex justify-between">
+                                    <span>🧪 Step 2 (Antigravity Sandbox Reproduction Test: ${escapeHtml(vLoop.reproduction_test_file || 'tests/repro_test.py')})</span>
+                                    <span class="text-emerald-300">${escapeHtml(vLoop.ast_nodes_delta || 'AST Verified')}</span>
+                                </div>
+                                <pre class="text-indigo-200 whitespace-pre-wrap text-[10px]">${escapeHtml(vLoop.reproduction_test_code)}</pre>
+                            </div>
+                            ` : ''}
+                            <div class="bg-rose-950/40 border-l-4 border-rose-500 p-2.5 rounded-r-lg">
+                                <div class="text-[10px] font-bold text-rose-400 uppercase mb-1">❌ Step 3A — BEFORE (Vulnerable Call-Site Removed)</div>
                                 <pre class="text-rose-200 whitespace-pre-wrap text-[11px]">- ${escapeHtml(patchInfo.before_code)}</pre>
                             </div>
                             <div class="bg-emerald-950/40 border-l-4 border-emerald-500 p-2.5 rounded-r-lg">
-                                <div class="text-[10px] font-bold text-emerald-400 uppercase mb-1">✅ AFTER (Patched by Gemini 4 Argon)</div>
+                                <div class="text-[10px] font-bold text-emerald-400 uppercase mb-1">✅ Step 3B — AFTER (Patched by Gemini 4 Argon & Verified in Sandbox)</div>
                                 <pre class="text-emerald-200 whitespace-pre-wrap text-[11px]">+ ${escapeHtml(patchInfo.after_code)}</pre>
                             </div>
                         </div>
-                        <div class="border-t border-slate-800 pt-2 text-[10px] text-slate-500 uppercase font-bold">Git Diff Lines:</div>
+                        <div class="border-t border-slate-800 pt-2 text-[10px] text-slate-500 uppercase font-bold">Unified Git Diff Lines:</div>
                     `;
                 }
 
@@ -341,11 +370,9 @@ async def hud_dashboard():
                 selectedCommitHash = hash;
                 document.querySelectorAll('.commit-card').forEach(el => {
                     el.classList.remove('border-cyan-400', 'bg-cyan-950/30');
-                    el.classList.add('border-slate-800/80', 'bg-slate-950');
                 });
                 const activeCard = document.getElementById(`commit-card-${hash}`);
                 if (activeCard) {
-                    activeCard.classList.remove('border-slate-800/80', 'bg-slate-950');
                     activeCard.classList.add('border-cyan-400', 'bg-cyan-950/30');
                 }
 
@@ -474,11 +501,12 @@ async def hud_dashboard():
                     await fetch('/api/arena/reset', { method: 'POST' });
                     currentAttackLevel = 0;
                     document.getElementById('battle-stepper').classList.add('hidden');
-                    document.getElementById('tab-content-diff').innerHTML = '<div class="text-amber-300 font-bold">⚡ Arena Reset to Vulnerable Baseline! All 5 vulnerabilities (Lv.1~Lv.5) are active again.</div>';
+                    document.getElementById('inspected-commit-label').textContent = '📍 Viewing: Clean Baseline State (HEAD)';
+                    await refreshDiff();
                     await refreshGitLog();
                     await refreshLogs();
-                    document.getElementById('red-result').innerText = '[Red Team Ready] Arena restored to vulnerable baseline.';
-                    document.getElementById('blue-result').innerText = '[Blue Team Ready] Waiting for adversary attacks.';
+                    document.getElementById('red-result').innerText = '[Red Team Ready] Arena restored to clean baseline (Lv.1~Lv.5 active).';
+                    document.getElementById('blue-result').innerText = '[Blue Team Ready] Telemetry stream cleared. Waiting for adversary attacks.';
                 } catch(e) {
                     alert('Reset error: ' + e);
                 }
@@ -558,6 +586,8 @@ async def hud_dashboard():
                             if(ev.level === 'RESET') color = 'text-amber-300 font-bold';
                             return `<div class="${color}">[${ev.timestamp}] [${ev.source}] ${ev.message}</div>`;
                         }).join('');
+                    } else {
+                        stream.innerHTML = '<div class="text-emerald-400 font-bold">[CLEAN BASELINE] 0 active breach events. Ready for evaluation.</div>';
                     }
                 } catch(e) {
                     console.error(e);
@@ -630,7 +660,9 @@ async def trigger_reset():
         data = res.json()
         arena_state["last_attacked_level"] = 0
         arena_state["last_patch_info"] = None
-        add_event("ARENA_ORCHESTRATOR", "RESET", "Arena reset to vulnerable baseline for new evaluation round", data)
+        # Wipe all previous breach/patch logs so Clean Reset starts with a 100% clean log stream!
+        telemetry_events.clear()
+        add_event("ARENA_ORCHESTRATOR", "RESET", "✨ CLEAN BASELINE RESTORED: Previous logs cleared & 5 vulnerabilities (Lv.1~Lv.5) reset to initial state.", data)
         return data
     except Exception as e:
         return {"status": "error", "message": str(e)}
@@ -651,14 +683,18 @@ async def git_history():
 @app.get("/api/git/diff")
 async def git_diff():
     try:
+        subj_res = subprocess.run(["git", "log", "-n", "1", "--pretty=format:%s"], capture_output=True, text=True)
+        latest_subject = (subj_res.stdout or "").strip().lower()
+        is_reset = "reset target code" in latest_subject or "baseline" in latest_subject
+
         res = subprocess.run(["git", "diff", "HEAD~1", "HEAD", "active_target.py"], capture_output=True, text=True)
         current_code = ""
         if os.path.exists("active_target.py"):
             with open("active_target.py", "r", encoding="utf-8") as f:
                 current_code = f.read()
         return {
-            "diff": res.stdout if res.stdout else "No uncommitted modifications.",
-            "last_patch": arena_state.get("last_patch_info"),
+            "diff": "CLEAN_BASELINE_STATE" if is_reset else (res.stdout if res.stdout else "No uncommitted modifications."),
+            "last_patch": None if is_reset else arena_state.get("last_patch_info"),
             "current_code": current_code
         }
     except Exception as e:
@@ -676,6 +712,7 @@ async def inspect_git_commit(commit_hash: str):
         subject = parts[1] if len(parts) > 1 else ""
         rel_time = parts[2] if len(parts) > 2 else ""
 
+        is_reset = "reset target code" in subject.lower() or "baseline" in subject.lower()
         diff_res = subprocess.run(["git", "show", "--format=", commit_hash, "--", "active_target.py"], capture_output=True, text=True)
         code_res = subprocess.run(["git", "show", f"{commit_hash}:active_target.py"], capture_output=True, text=True)
 
@@ -683,7 +720,7 @@ async def inspect_git_commit(commit_hash: str):
             "hash": short_hash,
             "subject": subject,
             "time": rel_time,
-            "diff": diff_res.stdout if diff_res.stdout else "No changes to active_target.py in this commit.",
+            "diff": "CLEAN_BASELINE_STATE" if is_reset else (diff_res.stdout if diff_res.stdout else "No changes to active_target.py in this commit."),
             "full_code": code_res.stdout if code_res.returncode == 0 else "File snapshot not available in this commit."
         }
     except Exception as e:
