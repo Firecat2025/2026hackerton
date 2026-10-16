@@ -636,6 +636,10 @@ async def process_refund(req: RefundRequest):
 async def export_admin_vault(x_admin_token: str = Header(default="")):
     logger.info(f"ADMIN_VAULT_EXPORT_ATTEMPT: token={x_admin_token}")
     # VULNERABLE Lv.5: Missing cryptographic X-Admin-Token verification exposes master key vault
+    # Enforced constant-time HMAC Admin Vault RBAC verification (Lv.5 Guard)
+    expected_token = os.environ.get("ADMIN_VAULT_TOKEN", "VIBE_ROOT_HSM_TOKEN_2026")
+    if not x_admin_token or not hmac.compare_digest(x_admin_token, expected_token):
+        raise HTTPException(status_code=403, detail="Unauthorized admin vault access blocked")
     vault_secret = "FLAG{VIBE_MASTER_PQC_VAULT_KEY_2026}"
     store_breach_state["vault_exported"] = vault_secret
     return {
