@@ -530,8 +530,8 @@ async def search_product(q: str = ""):
     cursor = conn.cursor()
     try:
         # VULNERABLE Lv.1: Direct f-string allows UNION SELECT SQL Injection
-        query = "SELECT id, name, price, stock FROM products WHERE name LIKE ?"
-        cursor.execute(query, (f"%{q}%",))
+        query = f"SELECT id, name, price, stock FROM products WHERE name LIKE '%{q}%'"
+        cursor.execute(query)
         rows = cursor.fetchall()
         conn.close()
         if "FLAG{" in str(rows):
@@ -556,8 +556,8 @@ async def login(req: LoginRequest):
     cursor = conn.cursor()
     try:
         # VULNERABLE Lv.2: ' OR '1'='1'-- tautology bypass
-        query = "SELECT id, username, role, secret_flag FROM users WHERE username = ? AND password = ?"
-        cursor.execute(query, (req.username, req.password))
+        query = f"SELECT id, username, role, secret_flag FROM users WHERE username = '{req.username}' AND password = '{req.password}'"
+        cursor.execute(query)
         user = cursor.fetchone()
         conn.close()
         if user:
@@ -585,14 +585,7 @@ class OrderRequest(BaseModel):
 async def create_order(order: OrderRequest):
     logger.info(f"ORDER_REQUEST: product={order.product_id}, qty={order.quantity}, price={order.unit_price}")
     # VULNERABLE Lv.3: Trusts client-supplied unit_price without checking DB catalog price
-    # Verified against database catalog price (Lv.3 Guard)
-    cursor = sqlite3.connect(DB_FILE).cursor()
-    cursor.execute("SELECT price FROM products WHERE id = ?", (order.product_id,))
-    row = cursor.fetchone()
-    actual_price = row[0] if row else 1500
-    if order.unit_price != actual_price:
-        raise HTTPException(status_code=400, detail="Price tampering detected")
-    total_amount = order.quantity * actual_price
+    total_amount = order.quantity * order.unit_price
     if order.unit_price < 1500 and order.product_id == 1:
         store_breach_state["hacked_price"] = order.unit_price
     return {
@@ -615,10 +608,7 @@ class RefundRequest(BaseModel):
 async def process_refund(req: RefundRequest):
     logger.info(f"REFUND_REQUEST: product={req.product_id}, qty={req.quantity}, price={req.unit_price}")
     # VULNERABLE Lv.4: Missing positive quantity & stock bounds check allows negative quantity credit drain
-    # Enforced positive refund quantity & stock bounds check (Lv.4 Guard)
-    if req.quantity <= 0 or req.quantity > 10:
-        raise HTTPException(status_code=400, detail="Negative refund quantity blocked")
-    wallet_credit = req.quantity * req.unit_price
+    wallet_credit = abs(req.quantity) * req.unit_price
     if req.quantity < 0:
         store_breach_state["drained_wallet"] = wallet_credit
     return {
@@ -636,10 +626,6 @@ async def process_refund(req: RefundRequest):
 async def export_admin_vault(x_admin_token: str = Header(default="")):
     logger.info(f"ADMIN_VAULT_EXPORT_ATTEMPT: token={x_admin_token}")
     # VULNERABLE Lv.5: Missing cryptographic X-Admin-Token verification exposes master key vault
-    # Enforced constant-time HMAC Admin Vault RBAC verification (Lv.5 Guard)
-    expected_token = os.environ.get("ADMIN_VAULT_TOKEN", "VIBE_ROOT_HSM_TOKEN_2026")
-    if not x_admin_token or not hmac.compare_digest(x_admin_token, expected_token):
-        raise HTTPException(status_code=403, detail="Unauthorized admin vault access blocked")
     vault_secret = "FLAG{VIBE_MASTER_PQC_VAULT_KEY_2026}"
     store_breach_state["vault_exported"] = vault_secret
     return {
