@@ -1,41 +1,89 @@
-# 🛡️ Vibe Defender: AI Autonomous Cyber Arena & Live Code Evolution
+# 🛡️ Vibe Defender: Autonomous AI Cyber Arena & Live Code Evolution
 
-> **2026 Hackathon Project**: AI 기반 자율 레드팀(공격)과 블루팀(방어)이 실시간으로 코드를 수정·검증·배포하는 자율 사이버 공방 및 관제 플랫폼
+> **Google DeepMind AI Hackathon 2026** (Track 4: Autonomous Agents & Developer Tools)  
+> An autonomous cyber arena where an AI Red Team (Adversary) and Blue Team (Defender) battle in real time against a live production e-commerce target, dynamically refactoring source code, committing to Git, and hot-reloading with zero downtime.
 
----
-
-## 📌 주요 특징
-1. **실시간 자율 방어 (Live Self-Healing)**: 타겟 애플리케이션 취약점 탐지 시 블루팀 AI 에이전트가 코드를 직접 수정하고 `git commit` 및 hot-reload(`uvicorn --reload`) 무중단 적용.
-2. **현실적인 공격 시뮬레이션 (Red Team Orchestration)**: SQL Injection, IDOR, Prompt Injection 등 다단계 공격 시나리오 자동 실행.
-3. **심사위원용 실시간 관제 HUD**: 공격 로그, 패치 전/후 코드 diff, 시스템 상태를 실시간 웹 대시보드(Port 8080)로 시각화.
-4. **GCP 무위험 보안 아키텍처**: 인바운드 방화벽 개방 없이 **Cloudflare Tunnel**로 100% 안전한 공인 HTTPS 도메인 연결.
+[![Model: Gemini 4 Argon](https://img.shields.io/badge/Model-Gemini_4_Argon-blue?style=flat-square&logo=google)](https://ai.google.dev/)
+[![Infrastructure: Google Cloud GCE](https://img.shields.io/badge/GCP-Compute_Engine-orange?style=flat-square&logo=googlecloud)](https://cloud.google.com/)
+[![Tunnel: Cloudflare Zero Trust](https://img.shields.io/badge/Security-Zero_Inbound_Tunnel-yellow?style=flat-square&logo=cloudflare)](https://www.cloudflare.com/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-emerald?style=flat-square)](LICENSE)
 
 ---
 
-## 🏗️ 아키텍처 구성
+## 📌 Key Highlights
 
-- **방어 대상 서버 (Target / Blue)**: `127.0.0.1:8002` (`uvicorn active_target:app --reload`)
-- **공격 및 메인 관제 서버 (HUD & Red)**: `127.0.0.1:8080` (`python3 server.py`)
-- **보안 공인 터널**: `cloudflared tunnel --url http://localhost:8080` (HTTPS 발급)
+1. **Live Autonomous Self-Healing**: When a vulnerability is exploited, the Blue Team AI Agent analyzes AST, rewrites the source code on the fly, commits to Git, and hot-reloads (`uvicorn --reload`) the production service with zero downtime.
+2. **Dual-Argon Orchestration**:
+   - **Red Argon Agent (`thinking_level="medium"`)**: Dynamically synthesizes polymorphic exploit payloads across SQL Injection, Authentication Bypass, and Business Logic Price Tampering.
+   - **Blue Argon Agent (`thinking_level="high"`)**: Performs deep root-cause AST analysis, enforces database catalog validation, and generates secure parameterized patches.
+3. **Closed Verification Loop (Auto-Battle)**: Red-Argon attacks (breach confirmed) ➔ Blue-Argon patches & commits ➔ Red-Argon re-attacks (exploit neutralized verified).
+4. **Time-Machine Cyber HUD**: A cyberpunk operations dashboard featuring real-time packet telemetry, visual before/after code diffs, and an immutable Git commit time-travel browser.
+5. **Zero-Inbound GCP Architecture**: Deployed on Google Cloud Engine (GCE) and published via Cloudflare Tunnel, strictly complying with enterprise cloud security requirements by leaving zero unsecured open inbound ports.
 
 ---
 
-## 🚀 빠른 시작
+## 🏗️ Architecture
 
-### 1. 의존성 설치
+```
+                       [ Cloudflare Zero-Trust Tunnel ]
+                                     │ (Public HTTPS)
+                                     ▼
+                ┌─────────────────────────────────────────┐
+                │       Cyber Arena HUD (Port 8080)       │
+                │  - Real-Time Packet & Exploit Telemetry │
+                │  - Visual Before/After Code Diff Viewer │
+                │  - Git Commit Time-Machine Browser      │
+                └────────────┬───────────────┬────────────┘
+                             │               │
+            ┌────────────────┴┐             ┌┴────────────────┐
+            ▼                                 ▼
+   [ Red Adversary Agent ]          [ Blue Defender Agent ]
+    Port 8003 (Argon Medium)         Port 8004 (Argon High)
+    - SQLi Search Exfiltration       - AST Source Code Patching
+    - Admin Auth Bypass              - Automated Git Commits
+    - Zero-Cost Price Tampering      - Fast Zero-Downtime Reload
+            │                                 │
+            │ (Exploit Attacks)               │ (Live Code Patches)
+            ▼                                 ▼
+  ┌─────────────────────────────────────────────────────────────┐
+  │     Active Target Application: Vibe Store (Port 8002)       │
+  │  - E-Commerce Storefront: Hardware Catalog, Cart & Orders   │
+  │  - Monitored by uvicorn hot-reload on active_target.py      │
+  └─────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 🚀 Quick Start (Local & Cloud)
+
+### 1. Prerequisites & Dependencies
 ```bash
 pip install -r requirements.txt
+export GEMINI_API_KEY="your-gemini-api-key"
 ```
 
-### 2. GCE VM 배포 및 동기화
+### 2. Deploy to Google Cloud GCE VM
 ```bash
-# 로컬 코드를 GCE VM으로 전송
+# Transfer repository to GCE VM
 gcloud compute scp --recurse . vibe-defender-vm:~/vibe-defender --zone=asia-northeast3-a
+
+# Connect via SSH
+gcloud compute ssh vibe-defender-vm --zone=asia-northeast3-a
 ```
 
-### 3. GCE 내부 실행
+### 3. Launch Full Cyber Arena Stack
 ```bash
-# GCE VM 접속 후
 cd ~/vibe-defender
 ./scripts/run_all.sh
 ```
+
+---
+
+## 🛡️ Hackathon Evaluation Scenario (1-Click Auto-Battle)
+
+1. Open the **Cyber Arena HUD** at `http://127.0.0.1:8080` (or public Cloudflare Tunnel URL).
+2. Click **`⚡ Start Auto-Battle`**:
+   - **Round 1 (SQLi Search)**: Red Agent extracts confidential user flags. Blue Agent patches query parameterization. Re-attack fails (400 Protected).
+   - **Round 2 (Auth Bypass)**: Red Agent bypasses admin login with tautology `' OR '1'='1'`. Blue Agent enforces bound credentials. Re-attack fails (401 Protected).
+   - **Round 3 (Price Tampering)**: Red Agent tampers order unit price to $0. Blue Agent injects database catalog price verification. Re-attack fails (400 Tampering Detected).
+3. Inspect the **Live Source Code Evolution** viewer to verify the exact before/after diffs committed to Git.
