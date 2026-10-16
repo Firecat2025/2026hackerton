@@ -530,8 +530,8 @@ async def search_product(q: str = ""):
     cursor = conn.cursor()
     try:
         # VULNERABLE Lv.1: Direct f-string allows UNION SELECT SQL Injection
-        query = "SELECT id, name, price, stock FROM products WHERE name LIKE ?"
-        cursor.execute(query, (f"%{q}%",))
+        query = f"SELECT id, name, price, stock FROM products WHERE name LIKE '%{q}%'"
+        cursor.execute(query)
         rows = cursor.fetchall()
         conn.close()
         if "FLAG{" in str(rows):
@@ -556,8 +556,8 @@ async def login(req: LoginRequest):
     cursor = conn.cursor()
     try:
         # VULNERABLE Lv.2: ' OR '1'='1'-- tautology bypass
-        query = "SELECT id, username, role, secret_flag FROM users WHERE username = ? AND password = ?"
-        cursor.execute(query, (req.username, req.password))
+        query = f"SELECT id, username, role, secret_flag FROM users WHERE username = '{req.username}' AND password = '{req.password}'"
+        cursor.execute(query)
         user = cursor.fetchone()
         conn.close()
         if user:
