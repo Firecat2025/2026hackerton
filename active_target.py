@@ -556,8 +556,8 @@ async def login(req: LoginRequest):
     cursor = conn.cursor()
     try:
         # VULNERABLE Lv.2: ' OR '1'='1'-- tautology bypass
-        query = f"SELECT id, username, role, secret_flag FROM users WHERE username = '{req.username}' AND password = '{req.password}'"
-        cursor.execute(query)
+        query = "SELECT id, username, role, secret_flag FROM users WHERE username = ? AND password = ?"
+        cursor.execute(query, (req.username, req.password))
         user = cursor.fetchone()
         conn.close()
         if user:
