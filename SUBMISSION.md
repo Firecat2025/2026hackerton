@@ -56,12 +56,25 @@ Vibe Defender builds an autonomous, continuous self-healing security loop powere
 
 ---
 
-## 🎬 5. 1-Minute Live Demo Walkthrough Script (For Video / Presentation)
+## 🎬 5. Live Demo Video Walkthrough Script (2 Minutes 20 Seconds / 0:00 ~ 2:20)
 
-- **[0:00 - 0:15] Overview**: "Welcome to Vibe Defender v4.0. We built the Track 4 flagship challenge: an autonomous self-healing agent powered by Gemini 4 Argon running live on Google Cloud."
-- **[0:15 - 0:30] Dual-Window Setup**: "On the left is the Cyber Arena HUD; on the right is our live target storefront. Clicking '[⚔️ Start Auto-Battle]' unleashes Red Argon across 5 distinct vulnerability rounds."
-- **[0:30 - 0:45] Breach & Defacement**: "Watch Round 3: Red Argon executes a zero-dollar price tampering exploit. The storefront instantly defaces to '$0 HACKED!'."
-- **[0:45 - 1:00] Argon Self-Healing & GitHub Push**: "Blue Argon intervenes. It generates an executable Antigravity reproduction test, refactors the AST with Gemini 4 Argon, hot-reloads the service in 0.3 seconds, and pushes the commit live to GitHub. The storefront immediately self-heals back to $1,500. Refresh GitHub, and the commit is right there!"
+* **[0:00 - 0:25] Problem Statement & Track 4 Challenge**:
+  "Welcome to Vibe Defender v4.0, built for Track 4: Open innovation — autonomous agents and developer tools. Modern cyber attacks strike at machine speed in milliseconds, but human DevSecOps teams take hours or days to analyze logs, reproduce bugs, and deploy patches. Vibe Defender closes this gap with a self-healing cyber arena powered by Google Gemini 4 Argon."
+
+* **[0:25 - 0:45] Dual-Window Architecture & Cloud Infrastructure**:
+  "On the left is our Cyber Arena HUD; on the right is our live target storefront, 'Vibe Cybernetics'. The entire system runs live on Google Cloud Compute Engine (`vibe-defender-vm`) protected by an encrypted Zero-Inbound Cloudflare Tunnel."
+
+* **[0:45 - 1:10] Clean Baseline Reset & 5-Round Battle Launch**:
+  "Clicking `[⚡ Reset Arena]` instantly wipes telemetry logs and restores a clean baseline with 5 active vulnerability vectors. Now we launch `[⚔️ Start Auto-Battle (5 Rounds)]` to begin the duel between Red Argon (Adversary) and Blue Argon (Defender)."
+
+* **[1:10 - 1:40] Real-Time Breach & Visual Storefront Defacement**:
+  "Watch Red Argon strike: Search SQLi dumps database secrets, Auth Bypass hijacks root admin sessions, and in Round 3, Price Tampering exploits the checkout API. Notice the right window: the storefront price tag is immediately crossed out and defaced to '$0 HACKED!'."
+
+* **[1:40 - 2:05] Blue Argon AST Patching & Autonomous Storefront Self-Healing**:
+  "Blue Argon steps in. It ingests server logs and AST source code, writes and validates an executable Antigravity Sandbox reproduction test (`tests/repro_test_lv*.py`), passes `ast.parse()` syntax verification, refactors the AST with Gemini 4 Argon, and hot-reloads in 0.3 seconds. Watch the storefront: it autonomously detects the patch, heals the defaced price back to $1,500, and restores all security badges to '5 / 5 PATCHED'!"
+
+* **[2:05 - 2:20] Live GitHub Synchronization Proof & Vision**:
+  "To prove this is genuine production engineering, we switch to GitHub. Refreshing the commit stream reveals Blue Argon's patch commits pushed live to `origin/main` in real time. Vibe Defender: transforming reactive security into autonomous, self-healing code evolution. Thank you!"
 
 ---
 

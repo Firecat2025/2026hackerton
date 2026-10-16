@@ -89,28 +89,30 @@ Vibe Defender v4.0은 구글 딥마인드 해커톤 Track 4의 핵심 도전 과
 
 ---
 
-## 5. 심사위원 1분 라이브 시연 스크립트
+---
 
-### 1단계: 듀얼 창 준비
-1. 좌측 화면: **[Cyber Arena HUD](https://updates-useful-identical-festivals.trycloudflare.com/)**
-2. 우측 화면: **[Target Storefront](https://updates-useful-identical-festivals.trycloudflare.com/portal/)**
-3. 보조 탭: **[GitHub Commits 스트림](https://github.com/Firecat2025/2026hackerton/commits/main)**
+## 5. 실전 시연 영상 (2분 20초 / 0:00 ~ 2:20) 타임라인 & 해설 가이드
 
-### 2단계: 클린 초기화 확인
-- HUD 우측 상단 **`[⚡ Reset Arena]`** 클릭.
-- **포인트 어필**: 텔레메트리 로그가 0건으로 비워지고, Visual Diff 탭에 Clean Baseline 카드가 표시되며, 쇼핑몰에 `5 VULNERABLE` 배지가 뜹니다.
+실제 제출되는 **2분 20초 시연 영상(`vibe_defender_video_compressed.mp4`)**의 타임라인별 핵심 내용입니다:
 
-### 3단계: 5라운드 자동 배틀 실행
-- **`[⚔️ Start Auto-Battle (5 Rounds)]`** 버튼 클릭!
-- **포인트 어필**:
-  - Red Argon이 침투하여 쇼핑몰 가격이 **`$0 HACKED!`**로 변조되고 계정이 탈취되는 모습.
-  - Blue Argon이 취약점을 진단하고 **Antigravity Sandbox 재현 테스트**를 통과시키는 로그.
-  - 0.3초 만에 핫리로드되면서 쇼핑몰 가격이 **`$1,500`으로 자동 복구(Self-Healing)**되는 장면.
-  - 상단 배지가 **`🛡️ 5 / 5 PATCHED`**로 전환되는 모습.
-
-### 4단계: 깃허브 실시간 동기화 증명
-- GitHub 커밋 페이지를 새로고침하여 방금 생성된 커밋 해시가 깃허브 웹사이트에 그대로 나타난 것을 확인시켜 줍니다.
-- HUD의 **`🔀 Visual Diff`** 탭에서 3단계 워크스루(호출부 진단 ➔ 재현 테스트 코드 ➔ BEFORE/AFTER 비교)를 보여줍니다.
+* **[0:00 ~ 0:25] 문제 제기 & Track 4 플래그십 과제 소개**:
+  - 기계 속도로 침투하는 제로데이 공격 vs 수 시간~수일 걸리는 인간 DevSecOps 대응 병목 제시.
+  - Track 4 공식 과제(취약점 탐지 ➔ 샌드박스 재현 테스트 ➔ Argon 패치 ➔ 깃 푸시) 1:1 충족 소개.
+* **[0:25 ~ 0:45] 듀얼 윈도우 구성 & 구글 클라우드 인프라**:
+  - 좌측: Cyber Arena HUD 관제 화면 / 우측: 라이브 타겟 쇼핑몰("Vibe Cybernetics") 구성.
+  - GCE 리눅스 가상머신(`vibe-defender-vm`) 및 Cloudflare Zero-Trust 터널 인프라 소개.
+* **[0:45 ~ 1:10] 클린 베이스라인 리셋 & 5라운드 자동 배틀 격돌**:
+  - `[⚡ Reset Arena]`로 0건 클린 초기화 확인.
+  - `[⚔️ Start Auto-Battle (5 Rounds)]` 클릭으로 Red Argon vs Blue Argon 실시간 공방전 개막.
+* **[1:10 ~ 1:40] 실시간 취약점 침투 & 쇼핑몰 화면 변조(Defacement)**:
+  - Red Argon의 검색창 SQLi, 관리자 로그인 우회, 그리고 3라운드 $0 결제 익스플로잇 성공.
+  - 우측 쇼핑몰 화면에서 $1,500 상품 가격이 실시간으로 붉은 취소선과 함께 **`$0 HACKED!`**로 변조되고 관리자 세션이 탈취되는 장면 확인.
+* **[1:40 ~ 2:05] Blue Argon 심층 패치 & 쇼핑몰 실시간 자동 자가치유 (Self-Healing)**:
+  - Blue Argon의 로그 분석 ➔ Antigravity Sandbox 재현 테스트(`tests/repro_test_lv*.py`) 통과 ➔ `ast.parse()` 문법 검증 ➔ Gemini 4 Argon AST 리팩토링.
+  - 0.3초 만에 무중단 핫리로드되며 우측 쇼핑몰 가격이 **`$1,500`으로 자동 복구(Self-Healing)**되고 방어 쉴드가 `5 / 5 PATCHED`로 전환되는 장면.
+* **[2:05 ~ 2:20] GitHub 실시간 커밋 푸시 현장 검증 & 마무리**:
+  - 공식 GitHub 커밋 페이지를 새로고침하여 방금 전 생성된 커밋이 실시간으로 GitHub.com에 푸시된 것을 입증.
+  - 수동 보안을 완전 자율 자가치유 보안으로 전환하는 미래 비전 제시.
 
 ---
 
