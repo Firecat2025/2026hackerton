@@ -35,9 +35,9 @@ def get_code_security_status():
     try:
         with open(__file__, "r", encoding="utf-8") as f:
             code = f.read()
-        lv1_patched = "WHERE name LIKE ?" in code
-        lv2_patched = "WHERE username = ? AND password = ?" in code
-        lv3_patched = "Price tampering detected" in code
+        lv1_patched = ("WHERE name " + "LIKE ?") in code
+        lv2_patched = ("WHERE username = ? " + "AND password = ?") in code
+        lv3_patched = ("Price tampering " + "detected") in code
 
         # If a vulnerability is patched, automatically heal its corresponding visual breach damage!
         if lv1_patched:
