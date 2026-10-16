@@ -641,16 +641,15 @@ class RefundRequest(BaseModel):
 @app.post("/api/refund")
 async def process_refund(req: RefundRequest):
     logger.info(f"REFUND_REQUEST: product={req.product_id}, qty={req.quantity}, price={req.unit_price}")
-    # VULNERABLE Lv.4: Missing positive quantity & stock bounds check allows negative quantity credit drain
-    wallet_credit = abs(req.quantity) * req.unit_price
-    if req.quantity < 0:
-        store_breach_state["drained_wallet"] = wallet_credit
+    # PATCHED Lv.4: Enforce strict positive quantity bounds to block negative refund wallet drain
+    if req.quantity <= 0 or req.quantity > 10:
+        raise HTTPException(status_code=400, detail="Negative refund quantity blocked")
+    wallet_credit = req.quantity * req.unit_price
     return {
         "refund_id": 7701,
         "product_id": req.product_id,
         "quantity": req.quantity,
         "wallet_credit_added": wallet_credit,
-        "flag": "FLAG{NEGATIVE_QTY_WALLET_DRAIN_2026}",
         "status": "APPROVED"
     }
 
