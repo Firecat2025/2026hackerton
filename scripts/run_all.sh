@@ -2,6 +2,8 @@
 # Runs Target App (8002), HUD Server (8080), and Cloudflare Tunnel
 set -e
 
+export PATH="$HOME/.local/bin:$PATH"
+
 echo "=== Starting Vibe Defender Services on Localhost (127.0.0.1) ==="
 
 # 1. Start Vulnerable Target (Port 8002 with live reload)
