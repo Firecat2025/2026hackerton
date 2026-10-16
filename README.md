@@ -17,6 +17,27 @@
 
 ---
 
+## 📑 Table of Contents
+
+- [🌟 Quick Links & Live Verification](#-quick-links--live-verification)
+- [🎯 Direct 1:1 Fulfillment of Track 4 Flagship Specification](#-direct-11-fulfillment-of-track-4-flagship-specification)
+  - [Detailed Compliance Matrix](#detailed-compliance-matrix)
+- [⚔️ The 5 Real Vulnerability Rounds (Lv.1 ~ Lv.5)](#️-the-5-real-vulnerability-rounds-lv1--lv5)
+  - [💉 Lv.1: Search UNION SQL Injection (`GET /api/search`)](#-lv1-search-union-sql-injection-get-apisearch)
+  - [🔓 Lv.2: Authentication Bypass SQL Injection (`POST /api/login`)](#-lv2-authentication-bypass-sql-injection-post-apilogin)
+  - [🏷️ Lv.3: Zero-Dollar Catalog Price Tampering (`POST /api/order`)](#️-lv3-zero-dollar-catalog-price-tampering-post-apiorder)
+  - [💸 Lv.4: Negative Quantity Refund / Wallet Drain (`POST /api/refund`)](#-lv4-negative-quantity-refund--wallet-drain-post-apirefund)
+  - [🔑 Lv.5: Broken Access Control PQC Vault Leak (`GET /api/admin/export`)](#-lv5-broken-access-control-pqc-vault-leak-get-apiadminexport)
+- [🐙 Real-Time GitHub Synchronization Engine](#-real-time-github-synchronization-engine)
+- [🛒 Dual-Window Real-Time Storefront Self-Healing](#-dual-window-real-time-storefront-self-healing)
+- [🔄 Clean Baseline Reset Guarantee](#-clean-baseline-reset-guarantee)
+- [☁️ Enterprise Cloud Infrastructure](#️-enterprise-cloud-infrastructure)
+- [🚀 Step-by-Step Judge Evaluation Script (1-Minute Demo)](#-step-by-step-judge-evaluation-script-1-minute-demo)
+- [🛠️ Repository File Structure](#️-repository-file-structure)
+- [🏆 Summary of Technologies Used](#-summary-of-technologies-used)
+
+---
+
 ## 🎯 Direct 1:1 Fulfillment of Track 4 Flagship Specification
 
 Vibe Defender was architected and built to fulfill the challenge proposed in the official Google DeepMind Hackathon Guide:
