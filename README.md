@@ -3,8 +3,8 @@
 > **Google DeepMind AI Hackathon 2026** (Track 4: Autonomous Agents & Developer Tools)  
 > An autonomous cyber arena where an AI Red Team (Adversary) and Blue Team (Defender) battle in real time against a live production e-commerce target, dynamically refactoring source code, committing to Git, and hot-reloading with zero downtime.
 
-[![Live HUD](https://img.shields.io/badge/Live_HUD-Master_Control_Center-cyan?style=for-the-badge&logo=googlecloud)](https://kit-consecutive-anderson-bridge.trycloudflare.com/)
-[![Live Storefront](https://img.shields.io/badge/Live_Storefront-Target_E--Commerce-rose?style=for-the-badge&logo=fastapi)](https://kit-consecutive-anderson-bridge.trycloudflare.com/portal/)
+[![Live HUD](https://img.shields.io/badge/Live_HUD-Master_Control_Center-cyan?style=for-the-badge&logo=googlecloud)](https://updates-useful-identical-festivals.trycloudflare.com/)
+[![Live Storefront](https://img.shields.io/badge/Live_Storefront-Target_E--Commerce-rose?style=for-the-badge&logo=fastapi)](https://updates-useful-identical-festivals.trycloudflare.com/portal/)
 [![Model: Gemini 4 Argon](https://img.shields.io/badge/Model-Gemini_4_Argon-blue?style=for-the-badge&logo=google)](https://ai.google.dev/)
 [![Infrastructure: GCP GCE](https://img.shields.io/badge/GCP-Compute_Engine_VM-orange?style=for-the-badge&logo=googlecloud)](https://cloud.google.com/)
 [![Security: Zero Inbound Tunnel](https://img.shields.io/badge/Security-Zero_Inbound_Tunnel-yellow?style=for-the-badge&logo=cloudflare)](https://www.cloudflare.com/)
@@ -14,9 +14,9 @@
 ## 🌐 Google Cloud Live Links (Open side-by-side in 2 browser windows)
 
 1. **Cyber Arena HUD (Master Control Center):**  
-   👉 [https://kit-consecutive-anderson-bridge.trycloudflare.com/](https://kit-consecutive-anderson-bridge.trycloudflare.com/)
+   👉 [https://updates-useful-identical-festivals.trycloudflare.com/](https://updates-useful-identical-festivals.trycloudflare.com/)
 2. **Target E-Commerce Storefront (Live Victim Application):**  
-   👉 [https://kit-consecutive-anderson-bridge.trycloudflare.com/portal/](https://kit-consecutive-anderson-bridge.trycloudflare.com/portal/)
+   👉 [https://updates-useful-identical-festivals.trycloudflare.com/portal/](https://updates-useful-identical-festivals.trycloudflare.com/portal/)
 
 *(GCP Infrastructure: Google Compute Engine (GCE) VM `vibe-defender-vm`, Zone: `asia-northeast3-a` Seoul, Project ID: `h2gdm-hack26icn-2630`)*
 
@@ -98,8 +98,8 @@
 Judges can verify live autonomous code self-healing in under 60 seconds by opening 2 windows side-by-side:
 
 1. **Step 1. Open Dual Windows:**
-   - **Left Window:** Open [Target Storefront](https://kit-consecutive-anderson-bridge.trycloudflare.com/portal/)
-   - **Right Window:** Open [Cyber Arena HUD](https://kit-consecutive-anderson-bridge.trycloudflare.com/)
+   - **Left Window:** Open [Target Storefront](https://updates-useful-identical-festivals.trycloudflare.com/portal/)
+   - **Right Window:** Open [Cyber Arena HUD](https://updates-useful-identical-festivals.trycloudflare.com/)
 2. **Step 2. Launch 1-Click Auto-Battle:**
    - On the Right Window (HUD), click **`[⚔️ Start Auto-Battle (5 Rounds)]`**.
    - Watch the 5-round progress bar advance through SQLi, Auth Bypass, Price Tampering, Negative Quantity Refund, and Key Vault Leaks.

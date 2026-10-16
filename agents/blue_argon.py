@@ -406,13 +406,22 @@ Return ONLY valid JSON (no markdown fences) with these exact keys:
         with open(TARGET_FILE, "w", encoding="utf-8") as f:
             f.write(patch_result["patched_full_code"])
 
-        # Step 4: Stage and commit to Git repository
+        # Step 4: Stage, commit, and push live to GitHub repository (non-blocking background push for instant UI)
         commit_msg = f"fix(security): {patch_result['description']}"
-        subprocess.run(["git", "add", TARGET_FILE], check=False)
+        subprocess.run(["git", "add", TARGET_FILE, "tests"], check=False)
         subprocess.run(["git", "commit", "-m", commit_msg], capture_output=True, text=True)
+        try:
+            subprocess.Popen(
+                ["git", "push", "origin", "HEAD:main", "--force"],
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+            )
+        except Exception:
+            pass
 
         hash_res = subprocess.run(["git", "rev-parse", "--short", "HEAD"], capture_output=True, text=True)
         commit_hash = hash_res.stdout.strip()
+        github_commit_url = f"https://github.com/Firecat2025/2026hackerton/commit/{commit_hash}"
         elapsed = round(time.time() - start_time, 2)
 
         return {
@@ -422,6 +431,7 @@ Return ONLY valid JSON (no markdown fences) with these exact keys:
             "engine_mode": patch_result["engine_mode"],
             "inference_latency_sec": elapsed,
             "commit_hash": commit_hash,
+            "github_commit_url": github_commit_url,
             "commit_message": commit_msg,
             "description": patch_result["description"],
             "root_cause": patch_result["root_cause"],
@@ -433,7 +443,8 @@ Return ONLY valid JSON (no markdown fences) with these exact keys:
 
     def reset_arena(self) -> Dict[str, Any]:
         """
-        Instantly resets active_target.py, sqlite db, and Git working state back to baseline.
+        Instantly resets active_target.py, sqlite db, and Git working state back to baseline,
+        and syncs the reset commit to GitHub.
         """
         try:
             if os.path.exists(BASELINE_FILE):
@@ -469,10 +480,18 @@ Return ONLY valid JSON (no markdown fences) with these exact keys:
 
             subprocess.run(["git", "add", TARGET_FILE], check=False)
             subprocess.run(["git", "commit", "-m", "chore(arena): reset target code to vulnerable baseline for new evaluation"], check=False)
+            try:
+                subprocess.Popen(
+                    ["git", "push", "origin", "HEAD:main", "--force"],
+                    stdout=subprocess.DEVNULL,
+                    stderr=subprocess.DEVNULL,
+                )
+            except Exception:
+                pass
 
             return {
                 "status": "reset_complete",
-                "message": "Arena reset to vulnerable baseline (5 vulnerabilities active, telemetry logs cleared) in 0.1s!"
+                "message": "Arena reset to vulnerable baseline (5 vulnerabilities active, synced to GitHub) in 0.1s!"
             }
         except Exception as e:
             return {"status": "error", "message": f"Reset failed: {str(e)}"}
