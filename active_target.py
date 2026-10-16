@@ -555,9 +555,9 @@ async def search_product(q: str = ""):
     conn = sqlite3.connect(DB_FILE)
     cursor = conn.cursor()
     try:
-        # VULNERABLE Lv.1: Direct f-string allows UNION SELECT SQL Injection
-        query = f"SELECT id, name, price, stock FROM products WHERE name LIKE '%{q}%'"
-        cursor.execute(query)
+        # PATCHED Lv.1: Parameterized query prevents UNION SELECT SQL Injection
+        query = "SELECT id, name, price, stock FROM products WHERE name LIKE ?"
+        cursor.execute(query, (f"%{q}%",))
         rows = cursor.fetchall()
         conn.close()
         if "FLAG{" in str(rows):
