@@ -480,16 +480,39 @@ async def hud_dashboard():
                     const data = await res.json();
                     const container = document.getElementById('git-log');
                     if(data.commits && data.commits.length > 0) {
-                        container.innerHTML = data.commits.map(c => `
-                            <div id="commit-card-${c.hash}" onclick="inspectCommit('${c.hash}')" class="commit-card cursor-pointer p-3 rounded-xl bg-slate-950 border border-slate-800/80 hover:border-cyan-400 transition group">
-                                <div class="flex justify-between items-center mb-1">
-                                    <span class="text-cyan-400 font-bold group-hover:underline">${c.hash}</span>
-                                    <span class="text-[9px] bg-slate-900 text-slate-400 px-1.5 py-0.5 rounded">Inspect 🔍</span>
+                        container.innerHTML = data.commits.map(c => {
+                            const msgLower = (c.message || '').toLowerCase();
+                            const isReset = msgLower.includes('reset') || msgLower.includes('baseline');
+                            const isPatch = msgLower.includes('fix(security)') || msgLower.includes('[argon]');
+
+                            let cardClass = 'bg-slate-950 border-slate-800/80 hover:border-cyan-400';
+                            let hashColor = 'text-cyan-400';
+                            let typeBadge = '<span class="text-[9px] bg-slate-800 text-slate-300 px-1.5 py-0.5 rounded font-bold">📦 SYSTEM</span>';
+
+                            if (isReset) {
+                                cardClass = 'bg-amber-950/20 border-amber-500/40 hover:border-amber-400';
+                                hashColor = 'text-amber-300';
+                                typeBadge = '<span class="text-[9px] bg-amber-500/20 text-amber-300 border border-amber-500/40 px-1.5 py-0.5 rounded font-bold">🔄 CLEAN RESET (Baseline)</span>';
+                            } else if (isPatch) {
+                                cardClass = 'bg-emerald-950/20 border-emerald-500/40 hover:border-emerald-400';
+                                hashColor = 'text-emerald-300';
+                                typeBadge = '<span class="text-[9px] bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 px-1.5 py-0.5 rounded font-bold">🛡️ ARGON PATCH</span>';
+                            }
+
+                            return `
+                            <div id="commit-card-${c.hash}" onclick="inspectCommit('${c.hash}')" class="commit-card cursor-pointer p-3 rounded-xl border transition group ${cardClass}">
+                                <div class="flex justify-between items-center mb-1.5">
+                                    <span class="${hashColor} font-bold group-hover:underline">#${c.hash}</span>
+                                    ${typeBadge}
                                 </div>
-                                <div class="text-slate-300 truncate text-[11px]" title="${escapeHtml(c.message)}">${escapeHtml(c.message)}</div>
-                                <div class="text-[10px] text-slate-500 mt-1">${c.time}</div>
+                                <div class="text-slate-200 truncate text-[11px] font-medium" title="${escapeHtml(c.message)}">${escapeHtml(c.message)}</div>
+                                <div class="flex justify-between items-center text-[10px] text-slate-500 mt-1.5">
+                                    <span>${c.time}</span>
+                                    <span class="text-cyan-400/80 group-hover:text-cyan-300">Click to Inspect 🔍</span>
+                                </div>
                             </div>
-                        `).join('');
+                            `;
+                        }).join('');
                     } else {
                         container.innerHTML = '<div class="text-slate-500">No commits found</div>';
                     }
@@ -589,7 +612,7 @@ async def trigger_reset():
 @app.get("/api/git/history")
 async def git_history():
     try:
-        res = subprocess.run(["git", "log", "-n", "6", "--pretty=format:%h|%s|%ar"], capture_output=True, text=True)
+        res = subprocess.run(["git", "log", "-n", "12", "--pretty=format:%h|%s|%ar"], capture_output=True, text=True)
         commits = []
         for line in res.stdout.strip().split("\n"):
             if "|" in line:
